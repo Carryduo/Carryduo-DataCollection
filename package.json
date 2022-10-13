@@ -1,0 +1,29 @@
+{
+  "name": "riot-data-collection",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "summonerId": "node ./data/summoner/getSummonerId.js",
+    "puuId": "node ./data/summoner/getPuuId.js",
+    "matchId": "node ./data/summoner/getMatchId.js",
+    "match": "node ./data/summoner/getMatch.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.2",
+    "mongoose": "^6.6.1",
+    "mongoose-sequence": "^5.3.1",
+    "mysql2": "^2.3.3",
+    "node-schedule": "^2.1.0",
+    "redis": "^4.3.1",
+    "toad-scheduler": "^1.6.1",
+    "typeorm": "^0.3.10"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
