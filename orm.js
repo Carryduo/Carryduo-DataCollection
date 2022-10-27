@@ -9,11 +9,15 @@ const dataSource = new typeorm.DataSource({
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
     synchronize: false,
-    logging: false,
+    logging: true,
     entities: [
         require("./entity/summoner.id"),
         require("./entity/puuid"),
-        require("./entity/match.id")
+        require("./entity/match.id"),
+        require('./entity/combination.data'),
+        require('./entity/combination.service.data'),
+        require('./entity/simulation.data'),
+        require('./entity/simulation.service.data')
     ],
 })
 

@@ -3,6 +3,8 @@ const { performance } = require("perf_hooks");
 const summonerController = require("./analyze/summonerId/summonerId.controller");
 const puuidController = require("./analyze/puuId/puuId.controller");
 const matchIdController = require("./analyze/matchId/matchId.controller");
+const dataRetirementController = require('./analyze/data-retirement/data.retirement.controller')
+
 const { AsyncTask } = require("toad-scheduler");
 const fs = require("fs");
 
@@ -13,7 +15,6 @@ const matchIdTask = new AsyncTask(
 
     //데이터 분석 로직 수행
     // TODO: api키가 정상이면 실행, 아니면 실행 취소
-    // return console.log('API 키 만료')
     const response = await summonerController.testRiotRequest();
     console.log(response);
     if (response) {
@@ -52,14 +53,15 @@ async function startGetMatchIds() {
   try {
     const start = performance.now();
     // 로우데이터 수집
-    await sleep(10);
+    await dataRetirementController.deleteOutdataedData()
+    // await sleep(10);
 
-    await summonerController.summonerId();
-    await sleep(10); // setTimmer를 이용해서 db가 온전히 연결된 이후에 데이터 분석 시작
-    await puuidController.puuId();
-    await sleep(10);
-    await matchIdController.matchId();
-    await sleep(10);
+    // await summonerController.summonerId();
+    // await sleep(10); // setTimmer를 이용해서 db가 온전히 연결된 이후에 데이터 분석 시작
+    // await puuidController.puuId();
+    // await sleep(10);
+    // await matchIdController.matchId();
+    // await sleep(10);
 
     const end = performance.now();
     const runningTime = end - start;
