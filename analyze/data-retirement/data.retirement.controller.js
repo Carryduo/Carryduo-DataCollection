@@ -1,10 +1,22 @@
 const logger = require("../../log")
-const { findVersion, deleteOutdatedData } = require("./data.retirement.service")
+const { findVersion_combination, deleteOutdatedData_combination, findVersion_simulation, deleteOutdatedData_simulation } = require("./data.retirement.service")
 
 
-exports.deleteOutdataedData = async () => {
+exports.deleteOutdatedData = async (table) => {
     try {
-        logger.info('outdated한 패치버전 데이터 제거 시작')
+        let findVersion, deleteOutdatedData
+
+        switch (table) {
+            case 'combination':
+                findVersion = findVersion_combination
+                deleteOutdatedData = deleteOutdatedData_combination
+                break
+            case 'simulation':
+                findVersion = findVersion_simulation
+                deleteOutdatedData = deleteOutdatedData_simulation
+                break
+        }
+        logger.info(`outdated한 패치버전 데이터 ${table}에서 제거 시작`)
         // 테이블에 존재하는 모든 패치버전 조회
         let originData = await findVersion()
 
@@ -47,10 +59,10 @@ exports.deleteOutdataedData = async () => {
         console.log(recentVersions)
         for (let i = 3; i < recentVersions.length; i++) {
             let version = recentVersions[i]
-            // await deleteOutdatedData(version)
-            console.log(`패치버전 ${version} 데이터 제거 완료`)
+            await deleteOutdatedData(version)
+            console.log(`패치버전 ${version} 데이터 ${table}에서 제거 완료`)
         }
-        logger.info('outdated한 패치버전 데이터 제거 완료')
+        logger.info(`outdated한 패치버전 ${table} 데이터 제거 완료`)
     } catch (err) {
         console.log(err)
     }

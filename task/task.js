@@ -40,7 +40,8 @@ async function startRetirement() {
     try {
         const start = performance.now();
 
-        await dataRetirementController.deleteOutdataedData()
+        await dataRetirementController.deleteOutdatedData('combination')
+        await dataRetirementController.deleteOutdatedData('simulation')
 
         const end = performance.now();
         const runningTime = end - start;
