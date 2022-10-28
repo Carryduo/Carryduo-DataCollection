@@ -1,5 +1,6 @@
 require("dotenv").config()
 const axios = require("axios")
+const logger = require("../../log")
 const { sleep } = require("../../timer")
 const { findSummonerId, savePuuId, disconnect } = require("./puuId.service")
 
@@ -14,15 +15,16 @@ async function startGetPuuId() {
     try {
         const summonerIds = await findSummonerId()
         console.log(summonerIds.length)
+        logger.info(summonerIds.length, { message: '= summonerId 개수/ PUUID 분석 시작' })
         while (key !== summonerIds.length) {
             await getPuuId(summonerIds, key)
             key++
         }
-        // await disconnect()
+        logger.info(summonerIds.length, { message: '= summonerId 개수/ PUUID 분석 완료' })
         return 'success'
     }
-    catch (error) {
-        console.log(error)
+    catch (err) {
+        logger.error(err, { message: '-from puuid 분석' })
         return 'fail'
     }
 }
@@ -58,7 +60,7 @@ async function getPuuId(summonerIds, key) {
             await sleep(125)
             return
         } else if (err.response.status === 403) {
-            console.log("api키 갱신 필요!")
+            logger.info('API키 갱신 필요 - PUUID 분석')
             return
         } else {
             console.log(err.response.status, err.response.statusText)

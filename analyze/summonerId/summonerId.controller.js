@@ -1,6 +1,7 @@
 const axios = require("axios")
+const logger = require("../../log")
 const { sleep } = require("../../timer")
-const { saveSummonerId, test } = require("./summonerId.service")
+const { saveSummonerId } = require("./summonerId.service")
 require("dotenv").config()
 
 exports.summonerId = async () => {
@@ -18,10 +19,12 @@ let errStatus = 0
 
 async function startGetSummonerId() {
     let summonerIds = []
+    logger.info('summonerId 분석 시작')
     while (page !== 6) {
         console.log("while문 진입", "status: " + page)
         await getSummonerId(summonerIds, page, summonerIds)
     }
+    logger.info('summonerId 분석 완료')
     return "success"
 }
 
@@ -37,10 +40,10 @@ exports.testRiotRequest = async () => {
             await sleep(125)
             return false
         } else if (err.response.status === 403) {
-            console.log("api키 갱신 필요!")
+            logger.info('API키 갱신 필요 - 라이엇 AccessKey 테스트')
             return false
         } else {
-            console.log(err.response.status, err.response.statusText)
+            logger.error(`라이엇 AccessKey 테스트 에러: ${err.response.status}: ${err.response.statusText}`)
             return false
         }
     })
@@ -65,7 +68,7 @@ async function getSummonerId(summonerIds, num, summonerIds) {
                     await sleep(125)
                     return (errStatus = 429)
                 } else if (err.response.status === 403) {
-                    console.log("api키 갱신 필요!")
+                    logger.info('API키 갱신 필요 - summonerId 수집')
                     return
                 } else {
                     console.log(err.response.status, err.response.statusText)

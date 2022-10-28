@@ -1,5 +1,6 @@
 require("dotenv").config()
 const axios = require("axios")
+const logger = require("../../log")
 const { sleep } = require("../../timer")
 const { findPuuId, saveMatchId, findMatchId, disconnect, getMatchData, transferAnlayzed } = require("./matchId.service")
 
@@ -32,6 +33,7 @@ let status
 async function startGetMatchId() {
     const puuIds = await findPuuId()
     console.log(puuIds.length)
+    logger.info(puuIds.length, { message: '= PUUID개수/ matchId 분석 시작' })
     let matchId = []
     while (key !== puuIds.length + 1) {
         console.log(key + `번째`)
@@ -40,6 +42,7 @@ async function startGetMatchId() {
             await getMatchId(puuIds, key, matchId)
         }
     }
+    logger.info(puuIds.length, { message: '= PUUID개수/ matchId 분석 완료' })
     return 'success'
 }
 
@@ -81,7 +84,7 @@ async function getMatchId(puuIds, num, matchId) {
             await sleep(125)
         } else if (err.response.status === 403) {
             console.log(key + " 번째 부터 오류!")
-            console.log("api키 갱신 필요!")
+            logger.info('API키 갱신 필요 - matchId 분석')
             status === 403
             return
         } else {
