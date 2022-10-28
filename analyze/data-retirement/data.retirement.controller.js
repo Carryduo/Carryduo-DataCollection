@@ -1,41 +1,56 @@
+const logger = require("../../log")
 const { findVersion, deleteOutdatedData } = require("./data.retirement.service")
 
 
 exports.deleteOutdataedData = async () => {
     try {
+        logger.info('outdated한 패치버전 데이터 제거 시작')
         // 테이블에 존재하는 모든 패치버전 조회
-        const data = await findVersion()
+        let originData = await findVersion()
 
         // 패치버전 최신순으로 sort 위해 소수 자리만 남기기
-        let versionList = []
-        for (const versionKey of data) {
-            let version = versionKey.version
-            // 패치버전이 12.x.인 경우, 마지막 . 제거
+        let data = []
+        for (const value of originData) {
+            data.push(value.version)
+        }
+
+        data = data.filter((version) => {
             if (version[version.length - 1] === '.') {
                 version = version.slice(0, -1)
             }
-            // 최신 버전 sort를 위해 소수점 이하만 남기기
-            version = version.split('.')[1]
-            // version = old는 제외
             if (!isNaN(Number(version))) {
-                versionList.push(Number(version))
+                return version
+            }
+        })
+        data = data.sort((a, b) => {
+            return b.split('.')[0] - a.split('.')[0]
+        })
+        let recentVersions = []
+        let lastVersions = []
+        const recentVersion = Number(String(data[0]).split('.')[0])
+        for (let i = 0; i < data.length; i++) {
+            const version = data[i]
+            if (Number(version.split('.')[0]) < recentVersion) {
+                lastVersions.push(version)
+            } else {
+                recentVersions.push(version)
             }
         }
-        // 최신 버전에 따라 오름차순
-        versionList = versionList.sort((a, b) => { return b - a })
-
+        recentVersions = recentVersions.sort((a, b) => {
+            return String(b).split('.')[1] - String(a).split('.')[1]
+        })
+        lastVersions = lastVersions.sort((a, b) => {
+            return String(b).split('.')[1] - String(a).split('.')[1]
+        })
+        recentVersions.push(...lastVersions)
         // 최신 3개 버전 제외하고 삭제하는 로직
-        for (let i = 3; i < versionList.length; i++) {
-            let version = versionList[i]
-            //  기존 DB 데이터 형식에 맞추기  EX) 17 -> 12.17, 7 -> 12.7.
-            if (versionList[i] < 10) {
-                version = `12.${version}.`
-            } else {
-                version = `12.${version}`
-            }
-            await deleteOutdatedData(version)
+        console.log(recentVersions)
+        for (let i = 3; i < recentVersions.length; i++) {
+            let version = recentVersions[i]
+            // await deleteOutdatedData(version)
             console.log(`패치버전 ${version} 데이터 제거 완료`)
         }
+        logger.info('outdated한 패치버전 데이터 제거 완료')
     } catch (err) {
         console.log(err)
     }
