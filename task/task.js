@@ -24,34 +24,6 @@ const matchIdTask = new AsyncTask(
         logger.error(err, { message: '-from matchIdtask' })
     }
 );
-
-const dataRetirementTask = new AsyncTask(
-    "task",
-    async () => {
-        await sleep(5)
-        return await startRetirement();
-    },
-    (err) => {
-        logger.error(err, { message: '-from dataRetirementTask' })
-    }
-);
-
-async function startRetirement() {
-    try {
-        const start = performance.now();
-
-        await dataRetirementController.deleteOutdatedData('combination')
-        await dataRetirementController.deleteOutdatedData('simulation')
-
-        const end = performance.now();
-        const runningTime = end - start;
-        const ConversionRunningTime = (runningTime / (1000 * 60)) % 60;
-        console.log(`===${ConversionRunningTime} 분소요===`);
-        logger.info(`===${ConversionRunningTime} 분소요===`)
-    } catch (err) {
-        logger.err(err, { message: '-from dataretriementTaskMethod' })
-    }
-}
 async function startGetMatchIds() {
     try {
         const start = performance.now();
@@ -64,9 +36,14 @@ async function startGetMatchIds() {
         await matchIdController.matchId();
         await sleep(10);
 
-        // TODO: matchId 삭제 관련
-        // await dataRetirementController.deleteWrongMatchId()
-        // await dataRetirementController.deleteOutdatedMatchId()
+        // Outdated data 처리
+        await dataRetirementController.deleteOutdatedData('combination')
+        await dataRetirementController.deleteOutdatedData('simulation')
+        await dataRetirementController.deleteOutdatedData('matchId')
+
+        //   Wrong matchId 처리
+        await dataRetirementController.deleteWrongMatchId()
+
 
         const end = performance.now();
         const runningTime = end - start;
@@ -78,4 +55,4 @@ async function startGetMatchIds() {
     }
 }
 
-module.exports = { matchIdTask, dataRetirementTask };
+module.exports = { matchIdTask };
