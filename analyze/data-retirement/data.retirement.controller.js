@@ -43,6 +43,9 @@ exports.deleteOutdatedData = async (table) => {
                 findVersion = findVersion_spell
                 deleteOutdatedData = deleteOutdatedData_spell
                 break
+            case "matchId":
+                findVersion = findVersion_matchId
+                deleteOutdatedData = deleteOutdatedData_matchId
         }
         logger.info(`outdated한 패치버전 데이터 ${table}에서 제거 시작`)
         // 테이블에 존재하는 모든 패치버전 조회
@@ -93,5 +96,18 @@ exports.deleteOutdatedData = async (table) => {
         logger.info(`outdated한 패치버전 ${table} 데이터 제거 완료`)
     } catch (err) {
         console.log(err)
+    }
+}
+
+exports.deleteWrongMatchId = async () => {
+    try {
+        const data = await findWrongMatchId()
+        logger.info(data.length, { message: `개: 분석 오류로 제거 시작한 matchId 개수 ` })
+        await deleteWrongMatchId()
+        logger.info(data.length, { message: `개: 분석 오류로 제거 완료한 matchId 개수` })
+        return
+    } catch (err) {
+        console.log(err)
+        logger.error(err, { message: "-from WrongMatchId controller" })
     }
 }

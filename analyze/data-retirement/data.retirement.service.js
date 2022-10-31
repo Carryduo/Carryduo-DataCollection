@@ -152,3 +152,63 @@ exports.deleteOutdatedData_spell = async (version) => {
         console.log(err)
     }
 }
+
+exports.findVersion_matchId = async () => {
+    return await matchId.createQueryBuilder().select(["DISTINCT matchid.version"]).getRawMany()
+}
+
+exports.deleteOutdatedData_matchId = async (version) => {
+    try {
+        console.log(version)
+        await matchId
+            .createQueryBuilder()
+            .delete()
+            .where("matchid.version = :version", { version })
+            .andWhere("matchid.analyzed = :analyzed", { analyzed: 1 })
+            .andWhere("matchid.rateAnalyzed = :rateAnalyzed", { rateAnalyzed: 1 })
+            .andWhere("matchid.banAnalyzed = :banAnalyzed", { banAnalyzed: 1 })
+            .andWhere("matchid.positionAnalyzed = :positionAnalyzed", { positionAnalyzed: 1 })
+            .andWhere("matchid.spellAnalyzed = :spellAnalyzed", { spellAnalyzed: 1 })
+            // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 1 })
+            .execute()
+        return
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+// WrongMatchId 삭제 관련
+exports.findWrongMatchId = async () => {
+    try {
+        return await matchId
+            .createQueryBuilder()
+            .select()
+            .where("matchid.analyzed = :analyzed", { analyzed: 2 })
+            .andWhere("matchid.rateAnalyzed = :rateAnalyzed", { rateAnalyzed: 2 })
+            .andWhere("matchid.banAnalyzed = :banAnalyzed", { banAnalyzed: 2 })
+            .andWhere("matchid.positionAnalyzed = :positionAnalyzed", { positionAnalyzed: 2 })
+            .andWhere("matchid.spellAnalyzed = :spellAnalyzed", { spellAnalyzed: 2 })
+            // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 2 })
+            .getMany()
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.deleteWrongMatchId = async () => {
+    try {
+        await matchId
+            .createQueryBuilder()
+            .delete()
+            .where("matchid.analyzed = :analyzed", { analyzed: 2 })
+            .andWhere("matchid.rateAnalyzed = :rateAnalyzed", { rateAnalyzed: 2 })
+            .andWhere("matchid.banAnalyzed = :banAnalyzed", { banAnalyzed: 2 })
+            .andWhere("matchid.positionAnalyzed = :positionAnalyzed", { positionAnalyzed: 2 })
+            .andWhere("matchid.spellAnalyzed = :spellAnalyzed", { spellAnalyzed: 2 })
+            // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 2 })
+            .execute()
+    } catch (err) {
+        console.log(err)
+        logger.error(err, { message: "-from WrongMatchId 삭제 쿼리" })
+    }
+}

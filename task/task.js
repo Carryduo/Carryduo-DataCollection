@@ -25,43 +25,11 @@ const matchIdTask = new AsyncTask(
     }
 )
 
-const dataRetirementTask = new AsyncTask(
-    "task",
-    async () => {
-        await sleep(5)
-        return await startRetirement()
-    },
-    (err) => {
-        logger.error(err, { message: "-from dataRetirementTask" })
-    }
-)
-
-async function startRetirement() {
-    try {
-        const start = performance.now()
-
-        await dataRetirementController.deleteOutdatedData("combination")
-        // await dataRetirementController.deleteOutdatedData("simulation")
-        await dataRetirementController.deleteOutdatedData("winRate")
-        await dataRetirementController.deleteOutdatedData("banRate")
-        await dataRetirementController.deleteOutdatedData("position")
-        await dataRetirementController.deleteOutdatedData("spell")
-
-        const end = performance.now()
-        const runningTime = end - start
-        const ConversionRunningTime = (runningTime / (1000 * 60)) % 60
-        console.log(`===${ConversionRunningTime} 분소요===`)
-        logger.info(`===${ConversionRunningTime} 분소요===`)
-    } catch (err) {
-        logger.err(err, { message: "-from dataretriementTaskMethod" })
-    }
-}
 async function startGetMatchIds() {
     try {
         const start = performance.now()
         // 로우데이터 수집
         await sleep(10)
-
         await summonerController.summonerId()
         await sleep(10) // setTimmer를 이용해서 db가 온전히 연결된 이후에 데이터 분석 시작
         await puuidController.puuId()
@@ -69,14 +37,26 @@ async function startGetMatchIds() {
         await matchIdController.matchId()
         await sleep(10)
 
+        // Outdated data 처리
+        await dataRetirementController.deleteOutdatedData("matchId")
+        await dataRetirementController.deleteOutdatedData("combination")
+        // await dataRetirementController.deleteOutdatedData('simulation')
+        await dataRetirementController.deleteOutdatedData("winRate")
+        await dataRetirementController.deleteOutdatedData("banRate")
+        await dataRetirementController.deleteOutdatedData("position")
+        await dataRetirementController.deleteOutdatedData("spell")
+
+        //   Wrong matchId 처리
+        await dataRetirementController.deleteWrongMatchId()
+
         const end = performance.now()
         const runningTime = end - start
         const ConversionRunningTime = (runningTime / (1000 * 60)) % 60
         console.log(`===${ConversionRunningTime} 분소요===`)
         logger.info(`===${ConversionRunningTime} 분소요===`)
     } catch (err) {
-        logger.error(err, { message: "-from matchIdTaskMethod" })
+        logger.error(err, { message: "-from matchIdTaskMethod(startgetMatchIds)" })
     }
 }
 
-module.exports = { matchIdTask, dataRetirementTask }
+module.exports = { matchIdTask }
