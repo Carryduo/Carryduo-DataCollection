@@ -14,10 +14,16 @@ const dataSource = new typeorm.DataSource({
         require("./entity/summoner.id"),
         require("./entity/puuid"),
         require("./entity/match.id"),
-        require('./entity/combination.data'),
-        require('./entity/combination.service.data'),
-        require('./entity/simulation.data'),
-        require('./entity/simulation.service.data')
+        require("./entity/combination.data"),
+        require("./entity/combination.service.data"),
+        require("./entity/simulation.data"),
+        require("./entity/simulation.service.data"),
+        require("./entity/champ.win.rate.data"),
+        require("./entity/champ.ban.data"),
+        require("./entity/champ.position.data"),
+        require("./entity/champ.spell.data"),
+        require("./entity/champ.spell.service.data"),
+        require("./entity/champ.service.data"),
     ],
 })
 
