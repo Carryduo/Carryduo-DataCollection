@@ -57,7 +57,6 @@ async function startGetMatchIds() {
         const start = performance.now();
         // 로우데이터 수집
         await sleep(10);
-
         await summonerController.summonerId();
         await sleep(10); // setTimmer를 이용해서 db가 온전히 연결된 이후에 데이터 분석 시작
         await puuidController.puuId();
@@ -65,13 +64,17 @@ async function startGetMatchIds() {
         await matchIdController.matchId();
         await sleep(10);
 
+        // TODO: matchId 삭제 관련
+        // await dataRetirementController.deleteWrongMatchId()
+        // await dataRetirementController.deleteOutdatedMatchId()
+
         const end = performance.now();
         const runningTime = end - start;
         const ConversionRunningTime = (runningTime / (1000 * 60)) % 60;
         console.log(`===${ConversionRunningTime} 분소요===`);
         logger.info(`===${ConversionRunningTime} 분소요===`)
     } catch (err) {
-        logger.error(err, { message: '-from matchIdTaskMethod' })
+        logger.error(err, { message: '-from matchIdTaskMethod(startgetMatchIds)' })
     }
 }
 

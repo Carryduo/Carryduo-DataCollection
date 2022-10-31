@@ -1,5 +1,5 @@
 const logger = require("../../log")
-const { findVersion_combination, deleteOutdatedData_combination, findVersion_simulation, deleteOutdatedData_simulation } = require("./data.retirement.service")
+const { findVersion_combination, deleteOutdatedData_combination, findVersion_simulation, deleteOutdatedData_simulation, findWrongMatchId, deleteWrongMatchId, findOutdatedMatchId } = require("./data.retirement.service")
 
 
 exports.deleteOutdatedData = async (table) => {
@@ -66,4 +66,23 @@ exports.deleteOutdatedData = async (table) => {
     } catch (err) {
         console.log(err)
     }
+}
+
+exports.deleteWrongMatchId = async () => {
+    try {
+        const data = await findWrongMatchId()
+        logger.info(data.length, { message: `개: 분석 오류로 제거 시작한 matchId 개수 ` })
+        await deleteWrongMatchId()
+        logger.info(data.length, { message: `개: 분석 오류로 제거 완료한 matchId 개수` })
+        return
+    } catch (err) {
+        console.log(err)
+        logger.error(err, { message: '-from WrongMatchId controller' })
+    }
+}
+
+exports.deleteOutdatedMatchId = async () => {
+    const data = await findOutdatedMatchId()
+    console.log(data)
+
 }
