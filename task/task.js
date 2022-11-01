@@ -6,7 +6,6 @@ const matchIdController = require("../analyze/matchId/matchId.controller")
 const dataRetirementController = require("../analyze/data-retirement/data.retirement.controller")
 
 const { AsyncTask } = require("toad-scheduler")
-const fs = require("fs")
 const logger = require("../log")
 
 const matchIdTask = new AsyncTask(
