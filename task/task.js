@@ -36,14 +36,8 @@ async function startGetMatchIds() {
         await matchIdController.matchId()
         await sleep(10)
 
-        // Outdated data 처리
+        // Outdated matchId 처리
         await dataRetirementController.deleteOutdatedData("matchId")
-        await dataRetirementController.deleteOutdatedData("combination")
-        // await dataRetirementController.deleteOutdatedData('simulation')
-        await dataRetirementController.deleteOutdatedData("winRate")
-        await dataRetirementController.deleteOutdatedData("banRate")
-        await dataRetirementController.deleteOutdatedData("position")
-        await dataRetirementController.deleteOutdatedData("spell")
 
         //   Wrong matchId 처리
         await dataRetirementController.deleteWrongMatchId()

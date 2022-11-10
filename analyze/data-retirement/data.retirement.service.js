@@ -9,6 +9,7 @@ const position = dataSource.getRepository("champ_position")
 const spell = dataSource.getRepository("champspell")
 const spell_service = dataSource.getRepository("champspell_service")
 const champ_service = dataSource.getRepository("champ_service")
+const matchId = dataSource.getRepository("matchid")
 
 exports.findVersion_combination = async () => {
     return await combination

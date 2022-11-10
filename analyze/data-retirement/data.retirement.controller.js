@@ -12,6 +12,8 @@ const {
     deleteOutdatedData_position,
     findVersion_spell,
     deleteOutdatedData_spell,
+    findWrongMatchId,
+    deleteWrongMatchId
 } = require("./data.retirement.service")
 
 exports.deleteOutdatedData = async (table) => {
