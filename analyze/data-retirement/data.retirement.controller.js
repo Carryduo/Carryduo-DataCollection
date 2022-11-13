@@ -12,6 +12,8 @@ const {
     deleteOutdatedData_position,
     findVersion_spell,
     deleteOutdatedData_spell,
+    findVersion_matchId,
+    deleteOutdatedData_matchId,
     findWrongMatchId,
     deleteWrongMatchId
 } = require("./data.retirement.service")
