@@ -24,6 +24,8 @@ async function startGetSummonerId() {
         console.log("while문 진입", "status: " + page)
         await getSummonerId(summonerIds, page, summonerIds)
     }
+    page = 1
+    errStatus = 0
     logger.info('summonerId 분석 완료')
     return "success"
 }

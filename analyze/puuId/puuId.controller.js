@@ -20,6 +20,7 @@ async function startGetPuuId() {
             await getPuuId(summonerIds, key)
             key++
         }
+        key = 0
         logger.info(summonerIds.length, { message: '= summonerId 개수/ PUUID 분석 완료' })
         return 'success'
     }

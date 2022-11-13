@@ -42,6 +42,8 @@ async function startGetMatchId() {
             await getMatchId(puuIds, key, matchId)
         }
     }
+    key = 0
+    status = 0
     logger.info(puuIds.length, { message: '= PUUID개수/ matchId 분석 완료' })
     return 'success'
 }
