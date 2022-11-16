@@ -14,6 +14,7 @@ exports.findPuuId = async () => {
             "puuid.division": "ASC",
         })
         .where("puuid.analyzed = :analyzed", { analyzed: 0 })
+        .orderBy('puuid.createdAt', 'DESC')
         .limit(2000)
         .getMany()
 }

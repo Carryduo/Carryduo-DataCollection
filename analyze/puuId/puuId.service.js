@@ -7,7 +7,7 @@ const queryRunner = dataSource.createQueryRunner()
 const { Brackets } = require('typeorm')
 
 exports.findSummonerId = async () => {
-    return await SummonerId.createQueryBuilder().select(['summonerid.tier', 'summonerid.summonerId', 'summonerid.division', 'summonerid.analyzed']).orderBy({
+    return await SummonerId.createQueryBuilder().select(['summonerid.tier', 'summonerid.summonerId', 'summonerid.division', 'summonerid.analyzed', 'summonerid.createdAt']).orderBy({
         'summonerid.tier': 'ASC',
         'summonerid.division': 'ASC'
     })
@@ -24,6 +24,7 @@ exports.findSummonerId = async () => {
         .andWhere('summonerid.analyzed = :analyzed', {
             analyzed: 0,
         })
+        .orderBy('summonerid.createdAt', 'DESC')
         .limit(2000)
         .getMany()
 }

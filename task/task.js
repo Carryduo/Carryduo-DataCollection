@@ -44,9 +44,9 @@ async function startGetMatchIds() {
 
         const end = performance.now()
         const runningTime = end - start
-        const ConversionRunningTime = (runningTime / (1000 * 60)) % 60
-        console.log(`===${ConversionRunningTime} 분소요===`)
-        logger.info(`===${ConversionRunningTime} 분소요===`)
+        const ConversionRunningTime = String((runningTime / (1000 * 60)) / 60).split('.')[0]
+        const ConversionRunningMinute = (runningTime / (1000 * 60)) % 60
+        logger.info(`=== ${ConversionRunningTime} 시간 ${ConversionRunningMinute} 분소요===`)
     } catch (err) {
         logger.error(err, { message: "-from matchIdTaskMethod(startgetMatchIds)" })
     }

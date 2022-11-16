@@ -13,20 +13,26 @@ exports.summonerId = async () => {
     }
 }
 
-
 let page = 1
 let errStatus = 0
-
+let standard = 6
 async function startGetSummonerId() {
     let summonerIds = []
+
     logger.info('summonerId 분석 시작')
-    while (page !== 6) {
+    while (page !== standard) {
         console.log("while문 진입", "status: " + page)
         await getSummonerId(summonerIds, page, summonerIds)
     }
-    page = 1
-    errStatus = 0
-    logger.info('summonerId 분석 완료')
+
+    if (standard === 31) {
+        page = 1
+        standard = 6
+    } else {
+        standard += 5 //6, 11, 16, 21, 26, 31
+        errStatus = 0
+    }
+    logger.info(`summonerId 분석 완료, 다음 분석 첫페이지: ${page}, 끝숫자: ${standard}`)
     return "success"
 }
 
