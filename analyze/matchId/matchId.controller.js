@@ -29,9 +29,12 @@ exports.transferMatchDataAnalyzed = async () => {
 
 let key = 0
 let status
-
+let offsetOption = 0
 async function startGetMatchId() {
-    const puuIds = await findPuuId()
+    const puuIds = await findPuuId(offsetOption)
+    console.log(puuIds[0].puuid)
+    // 첫번째: L4QHkXZVjsET2dY4s2Flavuias6doZkqDUswokEmkcEMA_2ccqnFpTSFcqiTaIXkgCMEoHNMRn6iyA
+    // 두번쨰: 3kaKQDH5jUFxPJpT-tOdiOjrxyjTIsKqE-60CZB4t7wHFYrAU3PwHL59_vlxcYE3PS3lkMz0JdO7Ow
     logger.info(puuIds.length, { message: '= PUUID개수/ matchId 분석 시작' })
     let matchId = []
     while (key !== puuIds.length + 1) {
@@ -43,7 +46,12 @@ async function startGetMatchId() {
     }
     key = 0
     status = 0
-    logger.info(puuIds.length, { message: '= PUUID개수/ matchId 분석 완료' })
+    if (puuIds.length < 2000) {
+        offsetOption = 0
+    } else {
+        offsetOption += 2000
+    }
+    logger.info(puuIds.length, { message: `= PUUID개수/ matchId 분석 완료 | 다음 offset = ${offsetOption}` })
     return 'success'
 }
 

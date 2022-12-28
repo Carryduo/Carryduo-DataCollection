@@ -7,15 +7,12 @@ const puuId = require("../../entity/puuid")
 const MatchData = dataSource.getRepository("matchdata")
 const { Brackets } = require("typeorm")
 
-exports.findPuuId = async () => {
+exports.findPuuId = async (offsetOption) => {
     return await PuuId.createQueryBuilder()
         .select(["puuid.tier", "puuid.summonerId", "puuid.division", "puuid.puuid"])
-        .orderBy({
-            "puuid.division": "ASC",
-        })
-        .where("puuid.analyzed = :analyzed", { analyzed: 0 })
         .orderBy('puuid.createdAt', 'DESC')
         .limit(2000)
+        .offset(offsetOption)
         .getMany()
 }
 exports.saveMatchId = async (matchId, tier, division, summonerId, puuid) => {

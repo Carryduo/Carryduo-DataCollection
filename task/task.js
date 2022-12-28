@@ -28,13 +28,13 @@ async function startGetMatchIds() {
     try {
         const start = performance.now()
         // 로우데이터 수집
-        await sleep(10)
-        await summonerController.summonerId()
-        await sleep(10) // setTimmer를 이용해서 db가 온전히 연결된 이후에 데이터 분석 시작
-        await puuidController.puuId()
+        // await sleep(10)
+        // await summonerController.summonerId()
+        // await sleep(10) // setTimmer를 이용해서 db가 온전히 연결된 이후에 데이터 분석 시작
+        // await puuidController.puuId()
         await sleep(10)
         await matchIdController.matchId()
-        await sleep(10)
+        // await sleep(10)
 
         // Outdated matchId 처리
         await dataRetirementController.deleteOutdatedData("matchId")
