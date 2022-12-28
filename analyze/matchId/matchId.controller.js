@@ -32,7 +32,6 @@ let status
 
 async function startGetMatchId() {
     const puuIds = await findPuuId()
-    console.log(puuIds.length)
     logger.info(puuIds.length, { message: '= PUUID개수/ matchId 분석 시작' })
     let matchId = []
     while (key !== puuIds.length + 1) {

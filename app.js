@@ -11,6 +11,6 @@ const scheduler = new ToadScheduler()
 db.connect()
 
 // 매치Id 수집
-const matchIdJob = new SimpleIntervalJob({ minutes: 180, runImmediately: true }, matchIdTask) // runImmediately: 즉시실행
+const matchIdJob = new SimpleIntervalJob({ minutes: 60, runImmediately: true }, matchIdTask) // runImmediately: 즉시실행
 // runImmediately: 즉시실행
 scheduler.addSimpleIntervalJob(matchIdJob)
