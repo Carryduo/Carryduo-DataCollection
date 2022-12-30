@@ -2,7 +2,7 @@ require("dotenv").config()
 const axios = require("axios")
 const logger = require("../../log")
 const { sleep } = require("../../timer")
-const { findPuuId, saveMatchId, findMatchId, disconnect, getMatchData, transferAnlayzed } = require("./matchId.service")
+const { findPuuId, saveMatchId, findMatchId, disconnect, getMatchData, transferAnlayzed, updateWrongPuuId } = require("./matchId.service")
 
 exports.matchId = async (req, res, next) => {
     try {
@@ -57,7 +57,6 @@ async function startGetMatchId() {
 
 async function getMatchId(puuIds, num, matchId) {
     try {
-
         console.log("getMatchId 실행")
         const targetUsersApiUrl = `https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuIds[num].puuid}/ids?start=0&count=5&api_key=${process.env.KEY}`
         const response = await axios.get(targetUsersApiUrl)
@@ -79,7 +78,6 @@ async function getMatchId(puuIds, num, matchId) {
                 console.log(num + " 번째 데이터 완료")
             }
         }
-
         return key++
     } catch (err) {
         if (!err.response) {
@@ -97,7 +95,7 @@ async function getMatchId(puuIds, num, matchId) {
             status === 403
             return
         } else {
-            console.log(err.response.status, err.response.statusText)
+            await updateWrongPuuId(puuIds[num].puuid)
             return key++
         }
     }

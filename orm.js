@@ -15,7 +15,6 @@ const dataSource = new typeorm.DataSource({
         require("./entity/puuid"),
         require("./entity/match.id"),
         require("./entity/combination.data"),
-        require("./entity/combination.service.data"),
         require("./entity/simulation.data"),
         require("./entity/simulation.service.data"),
         require("./entity/champ.win.rate.data"),

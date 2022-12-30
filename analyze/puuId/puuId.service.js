@@ -7,10 +7,7 @@ const queryRunner = dataSource.createQueryRunner()
 const { Brackets } = require('typeorm')
 
 exports.findSummonerId = async () => {
-    return await SummonerId.createQueryBuilder().select(['summonerid.tier', 'summonerid.summonerId', 'summonerid.division', 'summonerid.analyzed', 'summonerid.createdAt']).orderBy({
-        'summonerid.tier': 'ASC',
-        'summonerid.division': 'ASC'
-    })
+    return await SummonerId.createQueryBuilder().select(['summonerid.tier', 'summonerid.summonerId', 'summonerid.division', 'summonerid.analyzed', 'summonerid.createdAt'])
         .where(
             new Brackets((qb) => {
                 qb.where('summonerid.tier = :tier', {
@@ -59,6 +56,14 @@ exports.savePuuId = async (puuid, tier, division, summonerId) => {
         // await queryRunner.release()
         return { data, dbupdate }
     }
+}
+
+exports.updateWrongSummonerId = async (summonerId) => {
+    await SummonerId.createQueryBuilder().update().set({ analyzed: 2 })
+        .where('summonerid.summonerId = :summonerId', { summonerId })
+        .execute().then(() => {
+            console.log(`분석 오류 summonerId 처리 ${summonerId}`)
+        })
 }
 
 exports.disconnect = async () => {

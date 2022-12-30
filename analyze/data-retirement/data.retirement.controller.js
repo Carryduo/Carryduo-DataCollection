@@ -1,4 +1,5 @@
 const logger = require("../../log")
+const { findSummonerId } = require("../puuId/puuId.service")
 const {
     findVersion_combination,
     deleteOutdatedData_combination,
@@ -15,7 +16,11 @@ const {
     findVersion_matchId,
     deleteOutdatedData_matchId,
     findWrongMatchId,
-    deleteWrongMatchId
+    deleteWrongMatchId,
+    deleteWrongPuuId,
+    findWrongPuuId,
+    findWrongSummonerId,
+    deleteWrongSummonerId
 } = require("./data.retirement.service")
 
 exports.deleteOutdatedData = async (table) => {
@@ -91,8 +96,8 @@ exports.deleteOutdatedData = async (table) => {
         })
         recentVersions.push(...lastVersions)
         // 최신 3개 버전 제외하고 삭제하는 로직
-        // console.log(recentVersions)
-        for (let i = 3; i < recentVersions.length; i++) {
+        console.log(recentVersions)
+        for (let i = 2; i < recentVersions.length; i++) {
             let version = recentVersions[i]
             await deleteOutdatedData(version)
             // console.log(`패치버전 ${version} 데이터 ${table}에서 제거 완료`)
@@ -103,12 +108,27 @@ exports.deleteOutdatedData = async (table) => {
     }
 }
 
-exports.deleteWrongMatchId = async () => {
+exports.deleteWrongData = async (table) => {
     try {
-        const data = await findWrongMatchId()
-        logger.info(data.length, { message: `개: 분석 오류로 제거 시작한 matchId 개수 ` })
-        await deleteWrongMatchId()
-        logger.info(data.length, { message: `개: 분석 오류로 제거 완료한 matchId 개수` })
+        let findWrongData, deleteWrongData
+        switch (table) {
+            case "matchId":
+                findWrongData = findWrongMatchId
+                deleteWrongData = deleteWrongMatchId
+                break
+            case "puuId":
+                findWrongData = findWrongPuuId
+                deleteWrongData = deleteWrongPuuId
+                break
+            case "summonerId":
+                findWrongData = findWrongSummonerId
+                deleteWrongData = deleteWrongSummonerId
+                break
+        }
+        const data = await findWrongData()
+        logger.info(data.length, { message: `개: 분석 오류로 제거 시작한 ${table} 개수 ` })
+        await deleteWrongData()
+        logger.info(data.length, { message: `개: 분석 오류로 제거 완료한 ${table} 개수` })
         return
     } catch (err) {
         console.log(err)

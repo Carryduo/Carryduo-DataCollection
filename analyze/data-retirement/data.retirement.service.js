@@ -10,6 +10,8 @@ const spell = dataSource.getRepository("champspell")
 const spell_service = dataSource.getRepository("champspell_service")
 const champ_service = dataSource.getRepository("champ_service")
 const matchId = dataSource.getRepository("matchid")
+const PuuId = dataSource.getRepository("puuid")
+const SummonerId = dataSource.getRepository('summonerid')
 
 exports.findVersion_combination = async () => {
     return await combination
@@ -165,11 +167,6 @@ exports.deleteOutdatedData_matchId = async (version) => {
             .createQueryBuilder()
             .delete()
             .where("matchid.version = :version", { version })
-            .andWhere("matchid.analyzed = :analyzed", { analyzed: 1 })
-            .andWhere("matchid.rateAnalyzed = :rateAnalyzed", { rateAnalyzed: 1 })
-            .andWhere("matchid.banAnalyzed = :banAnalyzed", { banAnalyzed: 1 })
-            .andWhere("matchid.positionAnalyzed = :positionAnalyzed", { positionAnalyzed: 1 })
-            .andWhere("matchid.spellAnalyzed = :spellAnalyzed", { spellAnalyzed: 1 })
             // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 1 })
             .execute()
         return
@@ -196,6 +193,30 @@ exports.findWrongMatchId = async () => {
     }
 }
 
+exports.findWrongPuuId = async () => {
+    try {
+        return await PuuId
+            .createQueryBuilder()
+            .select()
+            .where("puuid.analyzed = :analyzed", { analyzed: 2 })
+            .getMany()
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.findWrongSummonerId = async () => {
+    try {
+        return await SummonerId
+            .createQueryBuilder()
+            .select()
+            .where("summonerid.analyzed = :analyzed", { analyzed: 2 })
+            .getMany()
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 exports.deleteWrongMatchId = async () => {
     try {
         await matchId
@@ -211,5 +232,31 @@ exports.deleteWrongMatchId = async () => {
     } catch (err) {
         console.log(err)
         logger.error(err, { message: "-from WrongMatchId 삭제 쿼리" })
+    }
+}
+
+exports.deleteWrongPuuId = async () => {
+    try {
+        await PuuId
+            .createQueryBuilder()
+            .delete()
+            .where('puuid.analyzed = :analyzed', { analyzed: 2 })
+            .execute()
+    } catch (err) {
+        console.log(err)
+        return
+    }
+}
+
+exports.deleteWrongSummonerId = async () => {
+    try {
+        await SummonerId
+            .createQueryBuilder()
+            .delete()
+            .where('summonerid.analyzed = :analyzed', { analyzed: 2 })
+            .execute()
+    } catch (err) {
+        console.log(err)
+        return
     }
 }

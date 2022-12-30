@@ -2,7 +2,7 @@ require("dotenv").config()
 const axios = require("axios")
 const logger = require("../../log")
 const { sleep } = require("../../timer")
-const { findSummonerId, savePuuId, disconnect } = require("./puuId.service")
+const { findSummonerId, savePuuId, updateWrongSummonerId } = require("./puuId.service")
 
 exports.puuId = async (req, res, next) => {
     const result = await startGetPuuId()
@@ -64,7 +64,7 @@ async function getPuuId(summonerIds, key) {
             logger.info('API키 갱신 필요 - PUUID 분석')
             return
         } else {
-            console.log(err.response.status, err.response.statusText)
+            await updateWrongSummonerId(summonerIds[key].summonerId)
             return
         }
     }

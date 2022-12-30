@@ -61,3 +61,12 @@ exports.saveMatchId = async (matchId, tier, division, summonerId, puuid) => {
 exports.disconnect = async () => {
     await queryRunner.release()
 }
+
+exports.updateWrongPuuId = async (puuid) => {
+    await PuuId.createQueryBuilder().update().set({ analyzed: 2 })
+        .where('puuid.puuid = :puuid', { puuid })
+        .execute()
+        .then(() => {
+            console.log(`분석 오류 puuId 처리 ${puuid}`)
+        })
+}
