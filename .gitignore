@@ -1,6 +1,12 @@
 #text
 /text
 
+# 이미지 업로드 로직
+handler
+uploads/
+image-upload.js
+service.orm.js
+service.entity/
 
 # Logs
 logs

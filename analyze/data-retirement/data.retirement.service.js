@@ -1,6 +1,5 @@
 const { dataSource } = require("../../orm")
 const combination = dataSource.getRepository("combination")
-const combination_service = dataSource.getRepository("combination_service")
 const simulation = dataSource.getRepository("simulation")
 const simulation_service = dataSource.getRepository("simulation_service")
 const winRate = dataSource.getRepository("champ_win_rate")
@@ -28,12 +27,6 @@ exports.deleteOutdatedData_combination = async (version) => {
             .delete()
             .where("combination.version = :version", { version })
             .execute()
-        await combination_service
-            .createQueryBuilder()
-            .delete()
-            .where("combination_service.version = :version", { version })
-            .execute()
-        return
     } catch (err) {
         console.log(err)
     }
@@ -254,6 +247,38 @@ exports.deleteWrongSummonerId = async () => {
             .createQueryBuilder()
             .delete()
             .where('summonerid.analyzed = :analyzed', { analyzed: 2 })
+            .execute()
+    } catch (err) {
+        console.log(err)
+        return
+    }
+}
+
+exports.findDoneMatchId = async () => {
+    try {
+        return await matchId.createQueryBuilder().select()
+            .where("matchid.analyzed != :analyzed", { analyzed: 0 })
+            .andWhere("matchid.rateAnalyzed != :rateAnalyzed", { rateAnalyzed: 0 })
+            .andWhere("matchid.banAnalyzed != :banAnalyzed", { banAnalyzed: 0 })
+            .andWhere("matchid.positionAnalyzed != :positionAnalyzed", { positionAnalyzed: 0 })
+            .andWhere("matchid.spellAnalyzed != :spellAnalyzed", { spellAnalyzed: 0 })
+            .getMany()
+    } catch (err) {
+        console.log(err)
+        return
+    }
+}
+exports.deleteDoneMatchId = async () => {
+    try {
+        await matchId.
+            createQueryBuilder()
+            .delete()
+            .where("matchid.analyzed != :analyzed", { analyzed: 0 })
+            .andWhere("matchid.rateAnalyzed != :rateAnalyzed", { rateAnalyzed: 0 })
+            .andWhere("matchid.banAnalyzed != :banAnalyzed", { banAnalyzed: 0 })
+            .andWhere("matchid.positionAnalyzed != :positionAnalyzed", { positionAnalyzed: 0 })
+            .andWhere("matchid.spellAnalyzed != :spellAnalyzed", { spellAnalyzed: 0 })
+            // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 2 })
             .execute()
     } catch (err) {
         console.log(err)

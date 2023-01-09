@@ -20,7 +20,8 @@ const {
     deleteWrongPuuId,
     findWrongPuuId,
     findWrongSummonerId,
-    deleteWrongSummonerId
+    deleteWrongSummonerId,
+    deleteDoneMatchId
 } = require("./data.retirement.service")
 
 exports.deleteOutdatedData = async (table) => {
@@ -105,6 +106,16 @@ exports.deleteOutdatedData = async (table) => {
         logger.info(`outdated한 패치버전 ${table} 데이터 제거 완료`)
     } catch (err) {
         console.log(err)
+    }
+}
+
+exports.deleteDoneMatchId = async () => {
+    try {
+        await deleteDoneMatchId()
+        logger.info(data.length, { message: `분석 완료한 matchId 제거 완료` })
+    }
+    catch (err) {
+
     }
 }
 
