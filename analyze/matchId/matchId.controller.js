@@ -43,10 +43,10 @@ async function startGetMatchId() {
     }
     key = 0
     status = 0
-    if (puuIds.length < 2000) {
+    if (puuIds.length < 500) {
         offsetOption = 0
     } else {
-        offsetOption += 2000
+        offsetOption += 500
     }
     logger.info(puuIds.length, { message: `= PUUID개수/ matchId 분석 완료 | 다음 offset = ${offsetOption}` })
     return 'success'

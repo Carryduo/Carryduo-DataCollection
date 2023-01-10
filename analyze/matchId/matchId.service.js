@@ -11,7 +11,7 @@ exports.findPuuId = async (offsetOption) => {
     return await PuuId.createQueryBuilder()
         .select(["puuid.tier", "puuid.summonerId", "puuid.division", "puuid.puuid"])
         .orderBy('puuid.createdAt', 'DESC')
-        .limit(2000)
+        .limit(500)
         .offset(offsetOption)
         .getMany()
 }

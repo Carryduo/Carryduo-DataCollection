@@ -256,7 +256,7 @@ exports.deleteWrongSummonerId = async () => {
 
 exports.findDoneMatchId = async () => {
     try {
-        return await matchId.createQueryBuilder().select()
+        return await matchId.createQueryBuilder().select(['matchid.matchId'])
             .where("matchid.analyzed != :analyzed", { analyzed: 0 })
             .andWhere("matchid.rateAnalyzed != :rateAnalyzed", { rateAnalyzed: 0 })
             .andWhere("matchid.banAnalyzed != :banAnalyzed", { banAnalyzed: 0 })

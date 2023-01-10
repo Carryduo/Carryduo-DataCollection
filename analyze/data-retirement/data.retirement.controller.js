@@ -21,7 +21,8 @@ const {
     findWrongPuuId,
     findWrongSummonerId,
     deleteWrongSummonerId,
-    deleteDoneMatchId
+    deleteDoneMatchId,
+    findDoneMatchId
 } = require("./data.retirement.service")
 
 exports.deleteOutdatedData = async (table) => {
@@ -111,6 +112,8 @@ exports.deleteOutdatedData = async (table) => {
 
 exports.deleteDoneMatchId = async () => {
     try {
+        const data = await findDoneMatchId()
+        console.log(data.length)
         await deleteDoneMatchId()
         logger.info(data.length, { message: `분석 완료한 matchId 제거 완료` })
     }
