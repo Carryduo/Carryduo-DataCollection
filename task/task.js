@@ -27,7 +27,7 @@ const matchIdTask = new AsyncTask(
 async function startGetMatchIds() {
     try {
         const start = performance.now()
-        await dataRetirementController.deleteDoneMatchId()
+        // await dataRetirementController.deleteDoneMatchId()
         // Outdated matchId 처리
         await dataRetirementController.deleteOutdatedData("matchId")
 

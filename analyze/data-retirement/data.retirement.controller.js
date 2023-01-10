@@ -22,41 +22,18 @@ const {
     findWrongSummonerId,
     deleteWrongSummonerId,
     deleteDoneMatchId,
-    findDoneMatchId
+    findDoneMatchId,
+    getMainpageData_analysisDB
 } = require("./data.retirement.service")
 
 exports.deleteOutdatedData = async (table) => {
     try {
-        let findVersion, deleteOutdatedData
-
+        let findVersion, deleteOutdatedData, getMainPageData
         switch (table) {
-            case "combination":
-                findVersion = findVersion_combination
-                deleteOutdatedData = deleteOutdatedData_combination
-                break
-            case "simulation":
-                findVersion = findVersion_simulation
-                deleteOutdatedData = deleteOutdatedData_simulation
-                break
-            case "winRate":
-                findVersion = findVersion_winRate
-                deleteOutdatedData = deleteOutdatedData_winRate
-                break
-            case "banRate":
-                findVersion = findVersion_banRate
-                deleteOutdatedData = deleteOutdatedData_banRate
-                break
-            case "position":
-                findVersion = findVersion_position
-                deleteOutdatedData = deleteOutdatedData_position
-                break
-            case "spell":
-                findVersion = findVersion_spell
-                deleteOutdatedData = deleteOutdatedData_spell
-                break
             case "matchId":
                 findVersion = findVersion_matchId
                 deleteOutdatedData = deleteOutdatedData_matchId
+                getMainPageData = getMainpageData_analysisDB
         }
         logger.info(`outdated한 패치버전 데이터 ${table}에서 제거 시작`)
         // 테이블에 존재하는 모든 패치버전 조회
@@ -99,7 +76,18 @@ exports.deleteOutdatedData = async (table) => {
         recentVersions.push(...lastVersions)
         // 최신 3개 버전 제외하고 삭제하는 로직
         console.log(recentVersions)
-        for (let i = 2; i < recentVersions.length; i++) {
+        logger.info(`${table}에 남아있는 패치버전: ${recentVersions}`)
+        const status = await getMainPageData(recentVersions[0])
+        let startPoint
+
+        // 최신 2개 버전 제외하고 삭제하는 로직
+        if (status.category0 === 30 && status.category1 === 30 && status.category2) {
+            startPoint = 1
+        }
+        else {
+            startPoint = 2
+        }
+        for (let i = startPoint; i < recentVersions.length; i++) {
             let version = recentVersions[i]
             await deleteOutdatedData(version)
             // console.log(`패치버전 ${version} 데이터 ${table}에서 제거 완료`)

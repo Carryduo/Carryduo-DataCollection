@@ -285,3 +285,71 @@ exports.deleteDoneMatchId = async () => {
         return
     }
 }
+
+exports.getMainpageData_analysisDB = async (version) => {
+    try {
+        const category0 =
+            await combination.createQueryBuilder()
+                .select()
+                .where('combination.category = :category', { category: 0 })
+                .andWhere('combination.version = :version', { version })
+                .orderBy({ '(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7': 'DESC' })
+                .limit(30)
+                .getMany()
+        const category1 =
+            await combination.createQueryBuilder()
+                .select()
+                .where('combination.category = :category', { category: 1 })
+                .andWhere('combination.version = :version', { version })
+                .orderBy({ '(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7': 'DESC' })
+                .limit(30)
+                .getMany()
+
+        const category2 =
+            await combination.createQueryBuilder()
+                .select()
+                .where('combination.category = :category', { category: 2 })
+                .andWhere('combination.version = :version', { version })
+                .orderBy({ '(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7': 'DESC' })
+                .limit(30)
+                .getMany()
+        return { category0: category0.length, category1: category1.length, category2: category2.length }
+    } catch (err) {
+        console.log(err)
+        return
+    }
+}
+
+exports.getMainpageData_serviceDB = async (version) => {
+    try {
+        const category0 =
+            await combination_stat.createQueryBuilder()
+                .select()
+                .where('COMBINATION_STAT.category = :category', { category: 0 })
+                .andWhere('COMBINATION_STAT.version = :version', { version })
+                .orderBy({ '(COMBINATION_STAT.sample_num) * 0.3 + (COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 100 * 0.7': 'DESC' })
+                .limit(30)
+                .getMany()
+        const category1 =
+            await combination_stat.createQueryBuilder()
+                .select()
+                .where('COMBINATION_STAT.category = :category', { category: 1 })
+                .andWhere('COMBINATION_STAT.version = :version', { version })
+                .orderBy('COMBINATION_STAT.win/COMBINATION_STAT.sample_num', 'DESC')
+                .limit(30)
+                .getMany()
+
+        const category2 =
+            await combination_stat.createQueryBuilder()
+                .select()
+                .where('COMBINATION_STAT.category = :category', { category: 2 })
+                .andWhere('COMBINATION_STAT.version = :version', { version })
+                .orderBy({ '(COMBINATION_STAT.sample_num) * 0.3 + (COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 100 * 0.7': 'DESC' })
+                .limit(30)
+                .getMany()
+        return { category0: category0.length, category1: category1.length, category2: category2.length }
+    } catch (err) {
+        console.log(err)
+        return
+    }
+}
