@@ -5,8 +5,6 @@
 handler
 uploads/
 image-upload.js
-service.orm.js
-service.entity/
 
 # Logs
 logs
