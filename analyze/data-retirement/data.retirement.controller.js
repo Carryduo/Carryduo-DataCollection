@@ -23,7 +23,7 @@ const {
     deleteWrongSummonerId,
     deleteDoneMatchId,
     findDoneMatchId,
-    getMainpageData_analysisDB
+    getMainpageData_serviceDB
 } = require("./data.retirement.service")
 
 exports.deleteOutdatedData = async (table) => {
@@ -33,7 +33,7 @@ exports.deleteOutdatedData = async (table) => {
             case "matchId":
                 findVersion = findVersion_matchId
                 deleteOutdatedData = deleteOutdatedData_matchId
-                getMainPageData = getMainpageData_analysisDB
+                getMainPageData = getMainpageData_serviceDB
         }
         logger.info(`outdated한 패치버전 데이터 ${table}에서 제거 시작`)
         // 테이블에 존재하는 모든 패치버전 조회

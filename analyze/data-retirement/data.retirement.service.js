@@ -12,6 +12,9 @@ const matchId = dataSource.getRepository("matchid")
 const PuuId = dataSource.getRepository("puuid")
 const SummonerId = dataSource.getRepository('summonerid')
 
+const { dataSource_service } = require("../../service.orm")
+const combination_stat = dataSource_service.getRepository("COMBINATION_STAT")
+
 exports.findVersion_combination = async () => {
     return await combination
         .createQueryBuilder()
@@ -327,6 +330,8 @@ exports.getMainpageData_serviceDB = async (version) => {
                 .select()
                 .where('COMBINATION_STAT.category = :category', { category: 0 })
                 .andWhere('COMBINATION_STAT.version = :version', { version })
+                .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
+                .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
                 .orderBy({ '(COMBINATION_STAT.sample_num) * 0.3 + (COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 100 * 0.7': 'DESC' })
                 .limit(30)
                 .getMany()
@@ -335,6 +340,7 @@ exports.getMainpageData_serviceDB = async (version) => {
                 .select()
                 .where('COMBINATION_STAT.category = :category', { category: 1 })
                 .andWhere('COMBINATION_STAT.version = :version', { version })
+                .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
                 .orderBy('COMBINATION_STAT.win/COMBINATION_STAT.sample_num', 'DESC')
                 .limit(30)
                 .getMany()
@@ -344,6 +350,7 @@ exports.getMainpageData_serviceDB = async (version) => {
                 .select()
                 .where('COMBINATION_STAT.category = :category', { category: 2 })
                 .andWhere('COMBINATION_STAT.version = :version', { version })
+                .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
                 .orderBy({ '(COMBINATION_STAT.sample_num) * 0.3 + (COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 100 * 0.7': 'DESC' })
                 .limit(30)
                 .getMany()

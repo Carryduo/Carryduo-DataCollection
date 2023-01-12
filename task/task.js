@@ -30,7 +30,6 @@ async function startGetMatchIds() {
         // await dataRetirementController.deleteDoneMatchId()
         // Outdated matchId 처리
         await dataRetirementController.deleteOutdatedData("matchId")
-
         //   Wrong matchId 처리
         await dataRetirementController.deleteWrongData('matchId')
         await dataRetirementController.deleteWrongData('puuId')
