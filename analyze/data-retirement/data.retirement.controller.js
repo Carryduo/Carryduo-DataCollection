@@ -81,7 +81,7 @@ exports.deleteOutdatedData = async (table) => {
         let startPoint
 
         // 최신 2개 버전 제외하고 삭제하는 로직
-        if (status.category0 === 30 && status.category1 === 30 && status.category2) {
+        if (status.category0 >= 30 && status.category1 >= 30 && status.category2) {
             startPoint = 1
         }
         else {
