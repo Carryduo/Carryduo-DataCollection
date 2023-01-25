@@ -34,7 +34,7 @@ async function startGetMatchIds() {
         await dataRetirementController.deleteWrongData('matchId')
         await dataRetirementController.deleteWrongData('puuId')
         await dataRetirementController.deleteWrongData('summonerId')
-        // 로우데이터 수집
+        // // 로우데이터 수집
         await sleep(10)
         await summonerController.summonerId()
         await sleep(10) // setTimmer를 이용해서 db가 온전히 연결된 이후에 데이터 분석 시작

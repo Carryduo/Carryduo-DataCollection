@@ -350,7 +350,7 @@ exports.getMainpageData_serviceDB = async (version) => {
                 .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
                 .orderBy({ '((COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 0.4 + ((COMBINATION_STAT.sample_num - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) / ((SELECT MAX(sample_num) FROM COMBINATION_STAT) - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) * 0.6 )) * 5': 'DESC' })
                 .getCount()
-        return { category0: category0.length, category1: category1.length, category2: category2.length }
+        return { category0: category0, category1: category1, category2: category2 }
     } catch (err) {
         console.log(err)
         return
