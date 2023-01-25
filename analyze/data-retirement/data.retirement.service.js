@@ -10,7 +10,7 @@ const spell_service = dataSource.getRepository("champspell_service")
 const champ_service = dataSource.getRepository("champ_service")
 const matchId = dataSource.getRepository("matchid")
 const PuuId = dataSource.getRepository("puuid")
-const SummonerId = dataSource.getRepository('summonerid')
+const SummonerId = dataSource.getRepository("summonerid")
 
 const { dataSource_service } = require("../../service.orm")
 const combination_stat = dataSource_service.getRepository("COMBINATION_STAT")
@@ -178,11 +178,9 @@ exports.findWrongMatchId = async () => {
             .createQueryBuilder()
             .select()
             .where("matchid.analyzed = :analyzed", { analyzed: 2 })
-            .andWhere("matchid.rateAnalyzed = :rateAnalyzed", { rateAnalyzed: 2 })
-            .andWhere("matchid.banAnalyzed = :banAnalyzed", { banAnalyzed: 2 })
-            .andWhere("matchid.positionAnalyzed = :positionAnalyzed", { positionAnalyzed: 2 })
-            .andWhere("matchid.spellAnalyzed = :spellAnalyzed", { spellAnalyzed: 2 })
-            // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 2 })
+            .andWhere("matchid.champAnalyzed = :champAnalyzed", {
+                champAnalyzed: 2,
+            })
             .getMany()
     } catch (err) {
         console.log(err)
@@ -191,8 +189,7 @@ exports.findWrongMatchId = async () => {
 
 exports.findWrongPuuId = async () => {
     try {
-        return await PuuId
-            .createQueryBuilder()
+        return await PuuId.createQueryBuilder()
             .select()
             .where("puuid.analyzed = :analyzed", { analyzed: 2 })
             .getMany()
@@ -203,8 +200,7 @@ exports.findWrongPuuId = async () => {
 
 exports.findWrongSummonerId = async () => {
     try {
-        return await SummonerId
-            .createQueryBuilder()
+        return await SummonerId.createQueryBuilder()
             .select()
             .where("summonerid.analyzed = :analyzed", { analyzed: 2 })
             .getMany()
@@ -219,11 +215,9 @@ exports.deleteWrongMatchId = async () => {
             .createQueryBuilder()
             .delete()
             .where("matchid.analyzed = :analyzed", { analyzed: 2 })
-            .andWhere("matchid.rateAnalyzed = :rateAnalyzed", { rateAnalyzed: 2 })
-            .andWhere("matchid.banAnalyzed = :banAnalyzed", { banAnalyzed: 2 })
-            .andWhere("matchid.positionAnalyzed = :positionAnalyzed", { positionAnalyzed: 2 })
-            .andWhere("matchid.spellAnalyzed = :spellAnalyzed", { spellAnalyzed: 2 })
-            // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 2 })
+            .andWhere("matchid.champAnalyzed = :champAnalyzed", {
+                champAnalyzed: 2,
+            })
             .execute()
     } catch (err) {
         console.log(err)
@@ -233,10 +227,9 @@ exports.deleteWrongMatchId = async () => {
 
 exports.deleteWrongPuuId = async () => {
     try {
-        await PuuId
-            .createQueryBuilder()
+        await PuuId.createQueryBuilder()
             .delete()
-            .where('puuid.analyzed = :analyzed', { analyzed: 2 })
+            .where("puuid.analyzed = :analyzed", { analyzed: 2 })
             .execute()
     } catch (err) {
         console.log(err)
@@ -246,10 +239,9 @@ exports.deleteWrongPuuId = async () => {
 
 exports.deleteWrongSummonerId = async () => {
     try {
-        await SummonerId
-            .createQueryBuilder()
+        await SummonerId.createQueryBuilder()
             .delete()
-            .where('summonerid.analyzed = :analyzed', { analyzed: 2 })
+            .where("summonerid.analyzed = :analyzed", { analyzed: 2 })
             .execute()
     } catch (err) {
         console.log(err)
@@ -259,12 +251,13 @@ exports.deleteWrongSummonerId = async () => {
 
 exports.findDoneMatchId = async () => {
     try {
-        return await matchId.createQueryBuilder().select(['matchid.matchId'])
+        return await matchId
+            .createQueryBuilder()
+            .select(["matchid.matchId"])
             .where("matchid.analyzed != :analyzed", { analyzed: 0 })
-            .andWhere("matchid.rateAnalyzed != :rateAnalyzed", { rateAnalyzed: 0 })
-            .andWhere("matchid.banAnalyzed != :banAnalyzed", { banAnalyzed: 0 })
-            .andWhere("matchid.positionAnalyzed != :positionAnalyzed", { positionAnalyzed: 0 })
-            .andWhere("matchid.spellAnalyzed != :spellAnalyzed", { spellAnalyzed: 0 })
+            .andWhere("matchid.champAnalyzed != :champAnalyzed", {
+                champAnalyzed: 0,
+            })
             .getMany()
     } catch (err) {
         console.log(err)
@@ -273,15 +266,13 @@ exports.findDoneMatchId = async () => {
 }
 exports.deleteDoneMatchId = async () => {
     try {
-        await matchId.
-            createQueryBuilder()
+        await matchId
+            .createQueryBuilder()
             .delete()
             .where("matchid.analyzed != :analyzed", { analyzed: 0 })
-            .andWhere("matchid.rateAnalyzed != :rateAnalyzed", { rateAnalyzed: 0 })
-            .andWhere("matchid.banAnalyzed != :banAnalyzed", { banAnalyzed: 0 })
-            .andWhere("matchid.positionAnalyzed != :positionAnalyzed", { positionAnalyzed: 0 })
-            .andWhere("matchid.spellAnalyzed != :spellAnalyzed", { spellAnalyzed: 0 })
-            // .andWhere('matchid.simulationAnalyzed = :simulationAnalyzed', { simulationAnalyzed: 2 })
+            .andWhere("matchid.champAnalyzed != :champAnalyzed", {
+                champAnalyzed: 0,
+            })
             .execute()
     } catch (err) {
         console.log(err)
@@ -291,32 +282,45 @@ exports.deleteDoneMatchId = async () => {
 
 exports.getMainpageData_analysisDB = async (version) => {
     try {
-        const category0 =
-            await combination.createQueryBuilder()
-                .select()
-                .where('combination.category = :category', { category: 0 })
-                .andWhere('combination.version = :version', { version })
-                .orderBy({ '(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7': 'DESC' })
-                .limit(30)
-                .getMany()
-        const category1 =
-            await combination.createQueryBuilder()
-                .select()
-                .where('combination.category = :category', { category: 1 })
-                .andWhere('combination.version = :version', { version })
-                .orderBy({ '(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7': 'DESC' })
-                .limit(30)
-                .getMany()
+        const category0 = await combination
+            .createQueryBuilder()
+            .select()
+            .where("combination.category = :category", { category: 0 })
+            .andWhere("combination.version = :version", { version })
+            .orderBy({
+                "(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7":
+                    "DESC",
+            })
+            .limit(30)
+            .getMany()
+        const category1 = await combination
+            .createQueryBuilder()
+            .select()
+            .where("combination.category = :category", { category: 1 })
+            .andWhere("combination.version = :version", { version })
+            .orderBy({
+                "(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7":
+                    "DESC",
+            })
+            .limit(30)
+            .getMany()
 
-        const category2 =
-            await combination.createQueryBuilder()
-                .select()
-                .where('combination.category = :category', { category: 2 })
-                .andWhere('combination.version = :version', { version })
-                .orderBy({ '(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7': 'DESC' })
-                .limit(30)
-                .getMany()
-        return { category0: category0.length, category1: category1.length, category2: category2.length }
+        const category2 = await combination
+            .createQueryBuilder()
+            .select()
+            .where("combination.category = :category", { category: 2 })
+            .andWhere("combination.version = :version", { version })
+            .orderBy({
+                "(combination.sampleNum) * 0.3 + (combination.win/combination.sampleNum) * 100 * 0.7":
+                    "DESC",
+            })
+            .limit(30)
+            .getMany()
+        return {
+            category0: category0.length,
+            category1: category1.length,
+            category2: category2.length,
+        }
     } catch (err) {
         console.log(err)
         return
@@ -325,32 +329,51 @@ exports.getMainpageData_analysisDB = async (version) => {
 
 exports.getMainpageData_serviceDB = async (version) => {
     try {
-        const category0 =
-            await combination_stat.createQueryBuilder()
-                .select()
-                .where('COMBINATION_STAT.category = :category', { category: 0 })
-                .andWhere('COMBINATION_STAT.version = :version', { version })
-                .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
-                .orderBy({ '((COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 0.4 + ((COMBINATION_STAT.sample_num - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) / ((SELECT MAX(sample_num) FROM COMBINATION_STAT) - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) * 0.6 )) * 5': 'DESC' })
-                .getCount()
-        const category1 =
-            await combination_stat.createQueryBuilder()
-                .select()
-                .where('COMBINATION_STAT.category = :category', { category: 1 })
-                .andWhere('COMBINATION_STAT.version = :version', { version })
-                .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
-                .orderBy({ '((COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 0.4 + ((COMBINATION_STAT.sample_num - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) / ((SELECT MAX(sample_num) FROM COMBINATION_STAT) - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) * 0.6 )) * 5': 'DESC' })
-                .getCount()
+        const category0 = await combination_stat
+            .createQueryBuilder()
+            .select()
+            .where("COMBINATION_STAT.category = :category", { category: 0 })
+            .andWhere("COMBINATION_STAT.version = :version", { version })
+            .andWhere("COMBINATION_STAT.sample_num >= :sampleNum", {
+                sampleNum: 30,
+            })
+            .orderBy({
+                "((COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 0.4 + ((COMBINATION_STAT.sample_num - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) / ((SELECT MAX(sample_num) FROM COMBINATION_STAT) - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) * 0.6 )) * 5":
+                    "DESC",
+            })
+            .getCount()
+        const category1 = await combination_stat
+            .createQueryBuilder()
+            .select()
+            .where("COMBINATION_STAT.category = :category", { category: 1 })
+            .andWhere("COMBINATION_STAT.version = :version", { version })
+            .andWhere("COMBINATION_STAT.sample_num >= :sampleNum", {
+                sampleNum: 30,
+            })
+            .orderBy({
+                "((COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 0.4 + ((COMBINATION_STAT.sample_num - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) / ((SELECT MAX(sample_num) FROM COMBINATION_STAT) - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) * 0.6 )) * 5":
+                    "DESC",
+            })
+            .getCount()
 
-        const category2 =
-            await combination_stat.createQueryBuilder()
-                .select()
-                .where('COMBINATION_STAT.category = :category', { category: 2 })
-                .andWhere('COMBINATION_STAT.version = :version', { version })
-                .andWhere('COMBINATION_STAT.sample_num >= :sampleNum', { sampleNum: 30 })
-                .orderBy({ '((COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 0.4 + ((COMBINATION_STAT.sample_num - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) / ((SELECT MAX(sample_num) FROM COMBINATION_STAT) - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) * 0.6 )) * 5': 'DESC' })
-                .getCount()
-        return { category0: category0.length, category1: category1.length, category2: category2.length }
+        const category2 = await combination_stat
+            .createQueryBuilder()
+            .select()
+            .where("COMBINATION_STAT.category = :category", { category: 2 })
+            .andWhere("COMBINATION_STAT.version = :version", { version })
+            .andWhere("COMBINATION_STAT.sample_num >= :sampleNum", {
+                sampleNum: 30,
+            })
+            .orderBy({
+                "((COMBINATION_STAT.win/COMBINATION_STAT.sample_num) * 0.4 + ((COMBINATION_STAT.sample_num - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) / ((SELECT MAX(sample_num) FROM COMBINATION_STAT) - (SELECT MIN(sample_num) FROM COMBINATION_STAT)) * 0.6 )) * 5":
+                    "DESC",
+            })
+            .getCount()
+        return {
+            category0: category0.length,
+            category1: category1.length,
+            category2: category2.length,
+        }
     } catch (err) {
         console.log(err)
         return

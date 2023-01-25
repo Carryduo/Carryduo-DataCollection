@@ -23,7 +23,7 @@ const {
     deleteWrongSummonerId,
     deleteDoneMatchId,
     findDoneMatchId,
-    getMainpageData_serviceDB
+    getMainpageData_serviceDB,
 } = require("./data.retirement.service")
 
 exports.deleteOutdatedData = async (table) => {
@@ -83,8 +83,7 @@ exports.deleteOutdatedData = async (table) => {
         // 최신 2개 버전 제외하고 삭제하는 로직
         if (status.category0 >= 30 && status.category1 >= 30 && status.category2) {
             startPoint = 1
-        }
-        else {
+        } else {
             startPoint = 2
         }
         for (let i = startPoint; i < recentVersions.length; i++) {
@@ -104,10 +103,7 @@ exports.deleteDoneMatchId = async () => {
         console.log(data.length)
         await deleteDoneMatchId()
         logger.info(data.length, { message: `분석 완료한 matchId 제거 완료` })
-    }
-    catch (err) {
-
-    }
+    } catch (err) {}
 }
 
 exports.deleteWrongData = async (table) => {
