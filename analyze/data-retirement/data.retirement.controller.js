@@ -80,7 +80,7 @@ exports.deleteOutdatedData = async (table) => {
         const status = await getMainPageData(recentVersions[0])
         let startPoint
         // 최신 2개 버전 제외하고 삭제하는 로직
-        if (status.category0 >= 30 && status.category1 >= 30 && status.category2) {
+        if (status.category0 >= 30 && status.category1 >= 30 && status.category2 >= 30) {
             startPoint = 1
         } else {
             startPoint = 2
@@ -102,7 +102,7 @@ exports.deleteDoneMatchId = async () => {
         console.log(data.length)
         await deleteDoneMatchId()
         logger.info(data.length, { message: `분석 완료한 matchId 제거 완료` })
-    } catch (err) {}
+    } catch (err) { }
 }
 
 exports.deleteWrongData = async (table) => {
