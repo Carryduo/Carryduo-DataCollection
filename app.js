@@ -12,6 +12,6 @@ db.connect()
 serviceDB.connectService()
 
 // 매치Id 수집
-const matchIdJob = new SimpleIntervalJob({ minutes: 20, runImmediately: true }, matchIdTask) // runImmediately: 즉시실행
+const matchIdJob = new SimpleIntervalJob({ hours: 1, minutes: 30, runImmediately: true }, matchIdTask) // runImmediately: 즉시실행
 // runImmediately: 즉시실행
 scheduler.addSimpleIntervalJob(matchIdJob)
