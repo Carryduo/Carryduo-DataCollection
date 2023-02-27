@@ -1,4 +1,4 @@
-const { sleep } = require("../timer")
+const { sleep } = require("../timer/timer")
 const { performance } = require("perf_hooks")
 const summonerController = require("../analyze/summonerId/summonerId.controller")
 const puuidController = require("../analyze/puuId/puuId.controller")
@@ -31,9 +31,9 @@ async function startGetMatchIds() {
         // Outdated matchId 처리
         await dataRetirementController.deleteOutdatedData("matchId")
         //   Wrong matchId 처리
-        await dataRetirementController.deleteWrongData('matchId')
-        await dataRetirementController.deleteWrongData('puuId')
-        await dataRetirementController.deleteWrongData('summonerId')
+        await dataRetirementController.deleteWrongData("matchId")
+        await dataRetirementController.deleteWrongData("puuId")
+        await dataRetirementController.deleteWrongData("summonerId")
         // // 로우데이터 수집
         await sleep(10)
         await summonerController.summonerId()
@@ -45,7 +45,7 @@ async function startGetMatchIds() {
 
         const end = performance.now()
         const runningTime = end - start
-        const ConversionRunningTime = String((runningTime / (1000 * 60)) / 60).split('.')[0]
+        const ConversionRunningTime = String(runningTime / (1000 * 60) / 60).split(".")[0]
         const ConversionRunningMinute = (runningTime / (1000 * 60)) % 60
         logger.info(`=== ${ConversionRunningTime} 시간 ${ConversionRunningMinute} 분소요===`)
     } catch (err) {

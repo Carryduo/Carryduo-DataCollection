@@ -1,7 +1,7 @@
 require("dotenv").config()
 const axios = require("axios")
 const logger = require("../../log")
-const { sleep } = require("../../timer")
+const { sleep } = require("../../timer/timer")
 const { findSummonerId, savePuuId, updateWrongSummonerId } = require("./puuId.service")
 
 exports.puuId = async (req, res, next) => {
@@ -15,18 +15,17 @@ async function startGetPuuId() {
     try {
         const summonerIds = await findSummonerId()
         console.log(summonerIds.length)
-        logger.info(summonerIds.length, { message: '= summonerId 개수/ PUUID 분석 시작' })
+        logger.info(summonerIds.length, { message: "= summonerId 개수/ PUUID 분석 시작" })
         while (key !== summonerIds.length) {
             await getPuuId(summonerIds, key)
             key++
         }
         key = 0
-        logger.info(summonerIds.length, { message: '= summonerId 개수/ PUUID 분석 완료' })
-        return 'success'
-    }
-    catch (err) {
-        logger.error(err, { message: '-from puuid 분석' })
-        return 'fail'
+        logger.info(summonerIds.length, { message: "= summonerId 개수/ PUUID 분석 완료" })
+        return "success"
+    } catch (err) {
+        logger.error(err, { message: "-from puuid 분석" })
+        return "fail"
     }
 }
 
@@ -39,10 +38,15 @@ async function getPuuId(summonerIds, key) {
         const targetUsersPuuId = response.data.puuid
         if (!puuIds.includes(targetUsersPuuId)) {
             puuIds.push(targetUsersPuuId)
-            const data = await savePuuId(targetUsersPuuId, summonerIds[key].tier, summonerIds[key].division, summonerIds[key].summonerId)
+            const data = await savePuuId(
+                targetUsersPuuId,
+                summonerIds[key].tier,
+                summonerIds[key].division,
+                summonerIds[key].summonerId
+            )
             console.log(data)
             if (data.code === 1062) {
-                console.log('중복이야')
+                console.log("중복이야")
                 console.log(key + " 번째 부터 오류!")
                 return
             } else {
@@ -61,7 +65,7 @@ async function getPuuId(summonerIds, key) {
             await sleep(125)
             return
         } else if (err.response.status === 403) {
-            logger.info('API키 갱신 필요 - PUUID 분석')
+            logger.info("API키 갱신 필요 - PUUID 분석")
             return
         } else {
             await updateWrongSummonerId(summonerIds[key].summonerId)

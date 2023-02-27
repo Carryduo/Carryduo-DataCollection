@@ -1,6 +1,6 @@
 const axios = require("axios")
 const logger = require("../../log")
-const { sleep } = require("../../timer")
+const { sleep } = require("../../timer/timer")
 const { saveSummonerId } = require("./summonerId.service")
 require("dotenv").config()
 
@@ -19,7 +19,7 @@ let standard = 6
 async function startGetSummonerId() {
     let summonerIds = []
 
-    logger.info('summonerId 분석 시작')
+    logger.info("summonerId 분석 시작")
     while (page !== standard) {
         console.log("while문 진입", "status: " + page)
         await getSummonerId(summonerIds, page, summonerIds)
@@ -38,23 +38,28 @@ async function startGetSummonerId() {
 
 exports.testRiotRequest = async () => {
     const targetTierUsersApiUrl = `https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/DIAMOND/I?page=1&api_key=${process.env.KEY}`
-    const response = await axios.get(targetTierUsersApiUrl).then(() => {
-        return true
-    }).catch(async (err) => {
-        if (err.response.status === 429) {
-            console.log("getSummonerId 라이엇 요청 제한 경고!")
-            console.log(err.response.statusText)
-            console.log(`${num} 번째 페이지 요청 중에 오류`)
-            await sleep(125)
-            return false
-        } else if (err.response.status === 403) {
-            logger.info('API키 갱신 필요 - 라이엇 AccessKey 테스트')
-            return false
-        } else {
-            logger.error(`라이엇 AccessKey 테스트 에러: ${err.response.status}: ${err.response.statusText}`)
-            return false
-        }
-    })
+    const response = await axios
+        .get(targetTierUsersApiUrl)
+        .then(() => {
+            return true
+        })
+        .catch(async (err) => {
+            if (err.response.status === 429) {
+                console.log("getSummonerId 라이엇 요청 제한 경고!")
+                console.log(err.response.statusText)
+                console.log(`${num} 번째 페이지 요청 중에 오류`)
+                await sleep(125)
+                return false
+            } else if (err.response.status === 403) {
+                logger.info("API키 갱신 필요 - 라이엇 AccessKey 테스트")
+                return false
+            } else {
+                logger.error(
+                    `라이엇 AccessKey 테스트 에러: ${err.response.status}: ${err.response.statusText}`
+                )
+                return false
+            }
+        })
     return response
 }
 
@@ -76,7 +81,7 @@ async function getSummonerId(summonerIds, num, summonerIds) {
                     await sleep(125)
                     return (errStatus = 429)
                 } else if (err.response.status === 403) {
-                    logger.info('API키 갱신 필요 - summonerId 수집')
+                    logger.info("API키 갱신 필요 - summonerId 수집")
                     return
                 } else {
                     console.log(err.response.status, err.response.statusText)

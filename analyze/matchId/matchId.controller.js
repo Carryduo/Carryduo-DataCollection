@@ -1,8 +1,16 @@
 require("dotenv").config()
 const axios = require("axios")
 const logger = require("../../log")
-const { sleep } = require("../../timer")
-const { findPuuId, saveMatchId, findMatchId, disconnect, getMatchData, transferAnlayzed, updateWrongPuuId } = require("./matchId.service")
+const { sleep } = require("../../timer/timer")
+const {
+    findPuuId,
+    saveMatchId,
+    findMatchId,
+    disconnect,
+    getMatchData,
+    transferAnlayzed,
+    updateWrongPuuId,
+} = require("./matchId.service")
 
 exports.matchId = async (req, res, next) => {
     try {
@@ -22,9 +30,8 @@ exports.transferMatchDataAnalyzed = async () => {
         const result = await transferAnlayzed(matchId, analyzed)
         console.log(result)
     }
-    console.log('분석정보이동완료')
-    return 'success '
-
+    console.log("분석정보이동완료")
+    return "success "
 }
 
 let key = 0
@@ -32,7 +39,7 @@ let status
 let offsetOption = 0
 async function startGetMatchId() {
     const puuIds = await findPuuId(offsetOption)
-    logger.info(puuIds.length, { message: '= PUUID개수/ matchId 분석 시작' })
+    logger.info(puuIds.length, { message: "= PUUID개수/ matchId 분석 시작" })
     let matchId = []
     while (key !== puuIds.length + 1) {
         console.log(key + `번째`)
@@ -48,8 +55,10 @@ async function startGetMatchId() {
     } else {
         offsetOption += 500
     }
-    logger.info(puuIds.length, { message: `= PUUID개수/ matchId 분석 완료 | 다음 offset = ${offsetOption}` })
-    return 'success'
+    logger.info(puuIds.length, {
+        message: `= PUUID개수/ matchId 분석 완료 | 다음 offset = ${offsetOption}`,
+    })
+    return "success"
 }
 
 async function getMatchId(puuIds, num, matchId) {
@@ -64,11 +73,17 @@ async function getMatchId(puuIds, num, matchId) {
         }
 
         for (let matchid of currentMatchId) {
-            const data = await saveMatchId(matchid, puuIds[num].tier, puuIds[num].division, puuIds[num].summonerId, puuIds[num].puuid)
+            const data = await saveMatchId(
+                matchid,
+                puuIds[num].tier,
+                puuIds[num].division,
+                puuIds[num].summonerId,
+                puuIds[num].puuid
+            )
             //    중복값 넘어가기
             console.log(data)
             if (data.code === 1062) {
-                console.log('중복이야')
+                console.log("중복이야")
                 console.log(num + " 번째 부터 오류!")
                 return
             } else {
@@ -81,14 +96,13 @@ async function getMatchId(puuIds, num, matchId) {
             console.log("err.response가 없다! " + err.message)
             console.log(num + " 번째 부터 오류!")
             return key++
-        }
-        else if (err.response.status === 429) {
+        } else if (err.response.status === 429) {
             console.log("라이엇 요청 제한 경고!")
             console.log(key + " 번째 부터 오류!")
             await sleep(125)
         } else if (err.response.status === 403) {
             console.log(key + " 번째 부터 오류!")
-            logger.info('API키 갱신 필요 - matchId 분석')
+            logger.info("API키 갱신 필요 - matchId 분석")
             status === 403
             return
         } else {
