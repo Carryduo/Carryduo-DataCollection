@@ -4,80 +4,65 @@ const { sleep } = require("../../timer/timer")
 const { saveSummonerId } = require("./summonerId.service")
 require("dotenv").config()
 
+const fs = require("fs")
+
 exports.summonerId = async () => {
     try {
-        const result = await startGetSummonerId()
+        await startGetSummonerId()
         return "summonerId 분석 완료"
     } catch (err) {
         console.log(err)
     }
 }
 
-let page = 1
 let errStatus = 0
-let standard = 6
+
 async function startGetSummonerId() {
     let summonerIds = []
+    let { page, standard } = await readOffset()
+
+    const offset = {
+        page,
+        standard,
+    }
 
     logger.info("summonerId 분석 시작")
-    while (page !== standard) {
-        console.log("while문 진입", "status: " + page)
-        await getSummonerId(summonerIds, page, summonerIds)
+
+    while (offset.page !== offset.standard) {
+        console.log("while문 진입", "status: " + offset.page)
+        await getSummonerId(summonerIds, offset)
     }
 
-    if (standard === 31) {
-        page = 1
-        standard = 6
+    if (offset.standard === 31) {
+        offset.page = 1
+        offset.standard = 6
     } else {
-        standard += 5 //6, 11, 16, 21, 26, 31
+        offset.standard += 5 //6, 11, 16, 21, 26, 31
         errStatus = 0
     }
-    logger.info(`summonerId 분석 완료, 다음 분석 첫페이지: ${page}, 끝숫자: ${standard}`)
+    await writeOffset(offset.page, offset.standard)
+
+    logger.info(
+        `summonerId 분석 완료, 다음 분석 첫페이지: ${offset.page}, 끝숫자: ${offset.standard}`
+    )
     return "success"
 }
 
-exports.testRiotRequest = async () => {
-    const targetTierUsersApiUrl = `https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/DIAMOND/I?page=1&api_key=${process.env.KEY}`
-    const response = await axios
-        .get(targetTierUsersApiUrl)
-        .then(() => {
-            return true
-        })
-        .catch(async (err) => {
-            if (err.response.status === 429) {
-                console.log("getSummonerId 라이엇 요청 제한 경고!")
-                console.log(err.response.statusText)
-                console.log(`${num} 번째 페이지 요청 중에 오류`)
-                await sleep(125)
-                return false
-            } else if (err.response.status === 403) {
-                logger.info("API키 갱신 필요 - 라이엇 AccessKey 테스트")
-                return false
-            } else {
-                logger.error(
-                    `라이엇 AccessKey 테스트 에러: ${err.response.status}: ${err.response.statusText}`
-                )
-                return false
-            }
-        })
-    return response
-}
-
-async function getSummonerId(summonerIds, num, summonerIds) {
+async function getSummonerId(summonerIds, offset) {
     console.log("getSummonerId 실행")
 
     const tierList = ["DIAMOND", "PLATINUM"]
     const tierDivisionList = ["I", "II", "III", "IV"]
     for (let tier of tierList) {
         for (let division of tierDivisionList) {
-            console.log(`${tier} ${division}, ${num}` + "번째 페이지 요청")
-            const targetTierUsersApiUrl = `https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/${tier}/${division}?page=${num}&api_key=${process.env.KEY}`
+            console.log(`${tier} ${division}, ${offset.page}` + "번째 페이지 요청")
+            const targetTierUsersApiUrl = `https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/${tier}/${division}?page=${offset.page}&api_key=${process.env.KEY}`
 
             const response = await axios.get(targetTierUsersApiUrl).catch(async (err) => {
                 if (err.response.status === 429) {
                     console.log("getSummonerId 라이엇 요청 제한 경고!")
                     console.log(err.response.statusText)
-                    console.log(`${num} 번째 페이지 요청 중에 오류`)
+                    console.log(`${offset.page} 번째 페이지 요청 중에 오류`)
                     await sleep(125)
                     return (errStatus = 429)
                 } else if (err.response.status === 403) {
@@ -95,9 +80,8 @@ async function getSummonerId(summonerIds, num, summonerIds) {
                     if (!summonerIds.includes(value.summonerId)) {
                         summonerIds.push(value.summonerId)
                         const data = await saveSummonerId(value.summonerId, tier, division)
-                        console.log(data)
                         if (data.code === 1062) {
-                            console.log(num + "번째 페이지 요청 중 중복값 발생")
+                            console.log(offset.page + "번째 페이지 요청 중 중복값 발생")
                             continue
                         } else {
                             console.log(data)
@@ -106,11 +90,49 @@ async function getSummonerId(summonerIds, num, summonerIds) {
                 }
             } else {
                 errStatus = 0
-                page -= 1
+                offset.page -= 1
                 continue
             }
         }
     }
 
-    return page++
+    return offset.page++
+}
+
+async function readOffset() {
+    const fileName = "offset.txt"
+    const { page, standard } = JSON.parse(fs.readFileSync(fileName, { encoding: "utf-8" }))
+    return { page, standard }
+}
+
+async function writeOffset(page, standard) {
+    const fileName = "offset.txt"
+    const data = JSON.stringify({ page, standard })
+    fs.writeFileSync(fileName, data, { encoding: "utf-8" })
+}
+
+exports.testRiotRequest = async () => {
+    const targetTierUsersApiUrl = `https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/DIAMOND/I?page=1&api_key=${process.env.KEY}`
+    const response = await axios
+        .get(targetTierUsersApiUrl)
+        .then(() => {
+            return true
+        })
+        .catch(async (err) => {
+            if (err.response.status === 429) {
+                console.log("getSummonerId 라이엇 요청 제한 경고!")
+                console.log(err.response.statusText)
+                await sleep(125)
+                return false
+            } else if (err.response.status === 403) {
+                logger.info("API키 갱신 필요 - 라이엇 AccessKey 테스트")
+                return false
+            } else {
+                logger.error(
+                    `라이엇 AccessKey 테스트 에러: ${err.response.status}: ${err.response.statusText}`
+                )
+                return false
+            }
+        })
+    return response
 }

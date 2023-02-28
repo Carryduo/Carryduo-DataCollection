@@ -1,18 +1,5 @@
 const logger = require("../../log")
-const { findSummonerId } = require("../puuId/puuId.service")
 const {
-    findVersion_combination,
-    deleteOutdatedData_combination,
-    findVersion_simulation,
-    deleteOutdatedData_simulation,
-    findVersion_winRate,
-    deleteOutdatedData_winRate,
-    findVersion_banRate,
-    deleteOutdatedData_banRate,
-    findVersion_position,
-    deleteOutdatedData_position,
-    findVersion_spell,
-    deleteOutdatedData_spell,
     findVersion_matchId,
     deleteOutdatedData_matchId,
     findWrongMatchId,
@@ -102,7 +89,7 @@ exports.deleteDoneMatchId = async () => {
         console.log(data.length)
         await deleteDoneMatchId()
         logger.info(data.length, { message: `분석 완료한 matchId 제거 완료` })
-    } catch (err) { }
+    } catch (err) {}
 }
 
 exports.deleteWrongData = async (table) => {

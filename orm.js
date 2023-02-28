@@ -36,7 +36,7 @@ module.exports = {
                 console.log("분석용 연결 완료")
             })
             .catch(function (error) {
-                console.log("Error: ", error)
+                throw new Error(error)
             })
     },
     async close() {

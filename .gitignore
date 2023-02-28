@@ -1,6 +1,8 @@
 #text
 /text
 
+test.js
+
 # 이미지 업로드 로직
 handler
 uploads/
