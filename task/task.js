@@ -41,7 +41,8 @@ process.on("message", async function (m) {
                 console.log(process.cpuUsage(cpuUsage))
                 done = "delete"
             } else if (m.done === "finish") {
-                console.log("데이터 수집 프로세스 종료")
+                const now = new Date()
+                console.log(`데이터 수집 프로세스 종료 (종료시간:${now})`)
                 exec("pm2 stop handler.js")
             } else {
                 await matchIdController.matchId()
