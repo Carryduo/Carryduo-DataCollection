@@ -12,6 +12,8 @@ const {
     updateWrongPuuId,
 } = require("./matchId.service")
 
+const fs = require("fs")
+
 exports.matchId = async (req, res, next) => {
     try {
         const result = await startGetMatchId()
@@ -36,8 +38,9 @@ exports.transferMatchDataAnalyzed = async () => {
 
 let key = 0
 let status
-let offsetOption = 0
 async function startGetMatchId() {
+    let { offsetOption } = await matchIdReadOffset()
+
     const puuIds = await findPuuId(offsetOption)
     logger.info(puuIds.length, { message: "= PUUID개수/ matchId 분석 시작" })
     let matchId = []
@@ -55,6 +58,8 @@ async function startGetMatchId() {
     } else {
         offsetOption += 500
     }
+
+    await matchIdWriteOffset(offsetOption)
     logger.info(puuIds.length, {
         message: `= PUUID개수/ matchId 분석 완료 | 다음 offset = ${offsetOption}`,
     })
@@ -110,4 +115,16 @@ async function getMatchId(puuIds, num, matchId) {
             return key++
         }
     }
+}
+
+async function matchIdReadOffset() {
+    const fileName = "matchId-offset.txt"
+    const { offsetOption } = JSON.parse(fs.readFileSync(fileName, { encoding: "utf-8" }))
+    return { offsetOption }
+}
+
+async function matchIdWriteOffset(offsetOption) {
+    const fileName = "matchId-offset.txt"
+    const data = JSON.stringify({ offsetOption })
+    fs.writeFileSync(fileName, data, { encoding: "utf-8" })
 }
