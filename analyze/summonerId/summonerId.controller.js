@@ -100,13 +100,13 @@ async function getSummonerId(summonerIds, offset) {
 }
 
 async function readOffset() {
-    const fileName = "offset.txt"
+    const fileName = "summoner-offset.txt"
     const { page, standard } = JSON.parse(fs.readFileSync(fileName, { encoding: "utf-8" }))
     return { page, standard }
 }
 
 async function writeOffset(page, standard) {
-    const fileName = "offset.txt"
+    const fileName = "summoner-offset.txt"
     const data = JSON.stringify({ page, standard })
     fs.writeFileSync(fileName, data, { encoding: "utf-8" })
 }

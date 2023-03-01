@@ -10,7 +10,7 @@ const { Brackets } = require("typeorm")
 exports.findPuuId = async (offsetOption) => {
     return await PuuId.createQueryBuilder()
         .select(["puuid.tier", "puuid.summonerId", "puuid.division", "puuid.puuid"])
-        .orderBy('puuid.createdAt', 'DESC')
+        .orderBy("puuid.createdAt", "DESC")
         .limit(500)
         .offset(offsetOption)
         .getMany()
@@ -63,10 +63,19 @@ exports.disconnect = async () => {
 }
 
 exports.updateWrongPuuId = async (puuid) => {
-    await PuuId.createQueryBuilder().update().set({ analyzed: 2 })
-        .where('puuid.puuid = :puuid', { puuid })
+    await PuuId.createQueryBuilder()
+        .update()
+        .set({ analyzed: 2 })
+        .where("puuid.puuid = :puuid", { puuid })
         .execute()
         .then(() => {
             console.log(`분석 오류 puuId 처리 ${puuid}`)
         })
+}
+
+exports.getTodayMatchDataCount = async () => {
+    return await MatchId.createQueryBuilder()
+        .select("COUNT(*) today_matchid_count")
+        .where("DATE(createdAt) = CURDATE()")
+        .getRawOne()
 }
