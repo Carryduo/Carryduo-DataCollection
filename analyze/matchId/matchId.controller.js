@@ -86,13 +86,10 @@ async function getMatchId(puuIds, num, matchId) {
                 puuIds[num].puuid
             )
             //    중복값 넘어가기
-            console.log(data)
             if (data.code === 1062) {
                 console.log("중복이야")
                 console.log(num + " 번째 부터 오류!")
                 return
-            } else {
-                console.log(num + " 번째 데이터 완료")
             }
         }
         return key++
@@ -111,6 +108,7 @@ async function getMatchId(puuIds, num, matchId) {
             status === 403
             return
         } else {
+            logger.error(err.response.statusText, { message: "-from getMatchId" })
             await updateWrongPuuId(puuIds[num].puuid)
             return key++
         }

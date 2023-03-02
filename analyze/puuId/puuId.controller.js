@@ -44,13 +44,10 @@ async function getPuuId(summonerIds, key) {
                 summonerIds[key].division,
                 summonerIds[key].summonerId
             )
-            console.log(data)
             if (data.code === 1062) {
                 console.log("중복이야")
                 console.log(key + " 번째 부터 오류!")
                 return
-            } else {
-                console.log(key + " 번째 데이터 완료")
             }
         }
     } catch (err) {
@@ -68,6 +65,7 @@ async function getPuuId(summonerIds, key) {
             logger.info("API키 갱신 필요 - PUUID 분석")
             return
         } else {
+            logger.error(err.response.statusText, { message: "-from getPuuId" })
             await updateWrongSummonerId(summonerIds[key].summonerId)
             return
         }

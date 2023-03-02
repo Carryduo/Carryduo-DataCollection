@@ -70,6 +70,7 @@ async function getSummonerId(summonerIds, offset) {
                     return
                 } else {
                     console.log(err.response.status, err.response.statusText)
+                    logger.error(err.response.statusText, { message: "-from getSummonerId" })
                     return
                 }
             })
@@ -83,8 +84,6 @@ async function getSummonerId(summonerIds, offset) {
                         if (data.code === 1062) {
                             console.log(offset.page + "번째 페이지 요청 중 중복값 발생")
                             continue
-                        } else {
-                            console.log(data)
                         }
                     }
                 }

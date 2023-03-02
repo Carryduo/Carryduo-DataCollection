@@ -1,73 +1,77 @@
-const childProcess = require("child_process")
 const logger = require("./log")
+
+const db = require("./orm")
+const serviceDB = require("./service.orm")
+
+const dataRetirementController = require("./analyze/data-retirement/data.retirement.controller")
+const summonerController = require("./analyze/summonerId/summonerId.controller")
+const puuidController = require("./analyze/puuId/puuId.controller")
+const matchIdController = require("./analyze/matchId/matchId.controller")
+const { sleep } = require("./timer/timer")
+const { getTodayMatchDataCount } = require("./analyze/matchId/matchId.service")
+
+const { exec } = require("child_process")
 
 require("dotenv").config()
 
-// 프로세스 PORK
-let taskProcess
-if (process.env.LOCAL_DIRECTORY) {
-    taskProcess = childProcess.fork(process.env.LOCAL_DIRECTORY)
-} else {
-    taskProcess = childProcess.fork(process.env.UBUNTU_DIRECTORY)
-}
-
-// taskPorcess에게 업무 전달
-taskProcess.on("message", function (m) {
+async function handler() {
     try {
-        const cpuUsage = process.cpuUsage()
+        let count = 1
 
-        if (m.done === "connect") {
-            setTimeout(function () {
-                taskProcess.send({ parameter: 1 })
-            }, 1000)
-            console.log(
-                "부모프로세스에서 DB 연결 작업 완료 신호 받았다: ",
-                process.cpuUsage(cpuUsage)
-            )
-            return
-        } else if (m.done === "summonerId") {
-            setTimeout(function () {
-                taskProcess.send({ parameter: m.parameter + 1 })
-            }, 5000)
-            console.log(
-                "부모프로세스에서 summonerId 수집 작업 완료 신호 받았다: ",
-                process.cpuUsage(cpuUsage)
-            )
-            return
-        } else if (m.done === "puuId") {
-            setTimeout(function () {
-                taskProcess.send({ parameter: m.parameter + 1 })
-            }, 5000)
-            console.log(
-                "부모프로세스에서 puuId 수집 작업 완료 신호 받았다: ",
-                process.cpuUsage(cpuUsage)
-            )
-            return
-        } else if (m.done === "matchId") {
-            setTimeout(function () {
-                taskProcess.send({ parameter: m.parameter + 1 })
-            }, 5000)
-            console.log("부모프로세스에서 수집 작업 완료 신호 받았다: ", process.cpuUsage(cpuUsage))
-            return
-        } else if (m.done === "delete") {
-            setTimeout(function () {
-                taskProcess.send({ done: "finish" })
-            }, 5000)
-            console.log(
-                "부모프로세스에서 데이터 삭제 작업 완료 신호 받았다: ",
-                process.cpuUsage(cpuUsage)
-            )
-        } else if (m.done === "API expiration") {
+        await db.connect()
+        await serviceDB.connectService()
+        console.log("DB 연결 작업 완료")
+
+        const response = await summonerController.testRiotRequest()
+
+        if (response) {
+            while (true) {
+                const start = performance.now()
+                await collectData()
+                console.log("데이터 수집 작업 완료")
+                sleep(3)
+                await deleteData()
+                console.log("불순 데이터 삭제 작업 완료")
+
+                const { today_matchid_count } = await getTodayMatchDataCount()
+                if (today_matchid_count > 30000) {
+                    const now = new Date()
+                    logger.info(
+                        `데이터 수집 프로세스 종료 수집한 matchId 개수:${today_matchid_count}, 종료 시간:${now}`
+                    )
+                    exec("pm2 stop handler.js")
+                }
+
+                const end = performance.now()
+                const runningTime = end - start
+                const ConversionRunningTime = String(runningTime / (1000 * 60) / 60).split(".")[0]
+                const ConversionRunningMinute = (runningTime / (1000 * 60)) % 60
+                logger.info(
+                    `===${count} 번째 작업 ${ConversionRunningTime}시간 ${ConversionRunningMinute}분 소요 수집한 matchId: ${today_matchid_count}===`
+                )
+                count++
+            }
+        } else {
             throw new Error("API expiration")
         }
-    } catch (err) {
-        console.log(err)
-        logger.error(err, { message: "-from handler" })
-        // 자식, 부모 프로세스 종료
-        process.kill(taskProcess.pid)
-        process.exit()
+    } catch (error) {
+        logger.error(error, { message: "-from handler" })
     }
-})
+}
 
-// db 연결부터 taskProcess 작업 시작
-taskProcess.send({ parameter: 0 })
+handler()
+
+async function deleteData() {
+    // Outdated matchId 처리
+    await dataRetirementController.deleteOutdatedData("matchId")
+    // Wrong data 처리
+    await dataRetirementController.deleteWrongData("matchId")
+    await dataRetirementController.deleteWrongData("puuId")
+    await dataRetirementController.deleteWrongData("summonerId")
+}
+
+async function collectData() {
+    await summonerController.summonerId()
+    await puuidController.puuId()
+    await matchIdController.matchId()
+}
