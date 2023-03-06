@@ -28,12 +28,12 @@ async function handler() {
             while (matchIdCnt < 30000) {
                 const start = performance.now()
 
-                // await collectData()
+                await collectData()
                 console.log("데이터 수집 작업 완료")
 
                 sleep(3)
 
-                // await deleteData()
+                await deleteData()
                 console.log("불순 데이터 삭제 작업 완료")
 
                 const { today_matchid_count } = await getTodayMatchDataCount()
